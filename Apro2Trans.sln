@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apro2Trans", "Apro2Trans\Apro2Trans.csproj", "{EAB28EE3-D0D9-4A8C-812F-208933C80CAA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EAB28EE3-D0D9-4A8C-812F-208933C80CAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAB28EE3-D0D9-4A8C-812F-208933C80CAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAB28EE3-D0D9-4A8C-812F-208933C80CAA}.Debug|x86.ActiveCfg = Debug|x86
+		{EAB28EE3-D0D9-4A8C-812F-208933C80CAA}.Debug|x86.Build.0 = Debug|x86
+		{EAB28EE3-D0D9-4A8C-812F-208933C80CAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAB28EE3-D0D9-4A8C-812F-208933C80CAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAB28EE3-D0D9-4A8C-812F-208933C80CAA}.Release|x86.ActiveCfg = Release|x86
+		{EAB28EE3-D0D9-4A8C-812F-208933C80CAA}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F9DA1106-5724-488C-A91E-1B9D30A45445}
+	EndGlobalSection
+EndGlobal

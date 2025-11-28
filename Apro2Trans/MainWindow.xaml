@@ -1,0 +1,55 @@
+﻿<Window x:Class="Apro2Trans.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Apro2Trans"
+        mc:Ignorable="d"
+        Title="Apro2Trans" Height="450" Width="800" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <Label VerticalAlignment="Center">
+                LMPort
+            </Label>
+            <TextBox Width="100" VerticalAlignment="Center">
+            </TextBox>
+
+            <Label VerticalAlignment="Center">
+                DBPath
+            </Label>
+
+            <TextBox Width="200" VerticalAlignment="Center">
+            </TextBox>
+
+            <Button VerticalAlignment="Center" Margin="5 0 0 0">
+                Select
+            </Button>
+
+            <Label VerticalAlignment="Center">
+                From
+            </Label>
+
+            <ComboBox VerticalAlignment="Center" Width="100">
+            </ComboBox>
+
+            <Label VerticalAlignment="Center">
+                To
+            </Label>
+
+            <ComboBox VerticalAlignment="Center" Width="100">
+            </ComboBox>
+
+            <Button VerticalAlignment="Center" Margin="5 0 0 0">
+                Start
+            </Button>
+        </StackPanel>
+
+        <ListBox Name="Log" Grid.Row="1">
+        </ListBox>
+    </Grid>
+</Window>
