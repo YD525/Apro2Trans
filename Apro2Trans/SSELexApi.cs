@@ -81,6 +81,8 @@ namespace Apro2Trans
 
             EngineConfig.LMLocalAIEnable = true;
             EngineConfig.ContextEnable = true;
+
+            EngineConfig.ContextLimit = 150;
             EngineConfig.PreTranslateEnable = true;
 
             EngineConfig.Save();

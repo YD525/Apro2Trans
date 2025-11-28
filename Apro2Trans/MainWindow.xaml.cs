@@ -21,10 +21,10 @@ namespace Apro2Trans
             InitializeComponent();
         }
 
-        public SSELexApi Api = new SSELexApi();
+       
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Api.Init();
+            AproposHelper.TranslateApi.Init();
         }
     }
 }
