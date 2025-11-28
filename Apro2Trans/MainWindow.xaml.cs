@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -8,6 +9,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PhoenixEngine.ConvertManager;
+using PhoenixEngine.EngineManagement;
+using PhoenixEngine.TranslateCore;
 
 namespace Apro2Trans
 {
@@ -19,12 +23,76 @@ namespace Apro2Trans
         public MainWindow()
         {
             InitializeComponent();
+            LogHelper.Init();
         }
 
-       
+        public static List<Languages> GetSupportedLanguages()
+        {
+            List<Languages> LanguageList = new List<Languages>();
+
+            foreach (var Language in Enum.GetValues(typeof(Languages)))
+            {
+                LanguageList.Add((Languages)Language);
+            }
+
+            return LanguageList.OrderBy(lang => lang == Languages.Auto ? 0 : 1).ToList();
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             AproposHelper.TranslateApi.Init();
+
+            EngineConfig.AutoSetThreadLimit = false;
+
+            foreach (var GetLang in GetSupportedLanguages())
+            {
+                From.Items.Add(GetLang.ToString());
+                To.Items.Add(GetLang.ToString());
+            }
+        }
+
+        private void StartTrans(object sender, RoutedEventArgs e)
+        {
+            EngineConfig.MaxThreadCount = ConvertHelper.ObjToInt(ThreadLimit.Text);
+
+            if (DBPath.Text.Length > 0)
+            {
+                if (Directory.Exists(DBPath.Text))
+                {
+                    string GetPath = DBPath.Text;
+                    AproposHelper.ReadDB(GetPath);
+                }
+            }
+        }
+
+        private void From_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string GetValue = ConvertHelper.ObjToStr(From.SelectedValue);
+            if (GetValue.Length > 0)
+            {
+                Languages Lang = Enum.Parse<Languages>(GetValue);
+                Engine.From = Lang;
+            }
+        }
+
+        private void To_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string GetValue = ConvertHelper.ObjToStr(To.SelectedValue);
+            if (GetValue.Length > 0)
+            {
+                Languages Lang = Enum.Parse<Languages>(GetValue);
+                Engine.To = Lang;
+            }
+        }
+
+        private void ThreadLimit_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            EngineConfig.MaxThreadCount = ConvertHelper.ObjToInt(ThreadLimit.Text);
+        }
+
+        private void LMPort_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            EngineConfig.LMPort = ConvertHelper.ObjToInt(LMPort.Text);
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using PhoenixEngine.TranslateManage;
 using PhoenixEngine.EngineManagement;
+using System.Security.RightsManagement;
 
 namespace Apro2Trans
 {
@@ -15,499 +16,846 @@ namespace Apro2Trans
     {
 
         public static SSELexApi TranslateApi = new SSELexApi();
-        public static void TranslatePath(ProgressBar OneBar, string FilePath, string Suffix = ".txt")
+        public static void ReadDB(string FilePath, string Suffix = ".txt")
         {
+            Engine.InitTranslationCore(Engine.From, Engine.To);
+
             new Thread(() => {
 
                 int Sucess = 0;
                 var GetFiles = DataHelper.GetAllFile(FilePath, new List<string>() { Suffix });
 
-                OneBar.Dispatcher.Invoke(new Action(() => {
-                    OneBar.Maximum = GetFiles.Count;
-                }));
-
-
                 foreach (var Get in GetFiles)
                 {
                     string GetContent = DataHelper.ReadFileByStr(Get.FilePath, Encoding.UTF8);
 
-                    GetContent = ProcessAproposCode(Get.FilePath, Get.FileName, GetContent);
-                    DataHelper.WriteFile(Get.FilePath, Encoding.UTF8.GetBytes(GetContent));
-                   
-                    Sucess++;
-
-                    OneBar.Dispatcher.Invoke(new Action(() => {
-                        OneBar.Value = Sucess;
-                    }));
+                    ReadAproposRecords(Get.FilePath, Get.FileName, GetContent);
                 }
+
+                int Total = RecordCount;
+
+                Engine.Start();
 
             }).Start();
         }
 
-        public static string ProcessAproposCode(string FilePath,string FileName, string Content)
+        public static void WriteDB()
+        { 
+        
+        }
+
+        public static int RecordCount = 0;
+        public static void ReadAproposRecords(string FilePath, string FileName, string Content)
         {
             if (FileName == "Synonyms.txt")
             {
-                SynonymsItem GetSynonyms = JsonSerializer.Deserialize<SynonymsItem>(Content);
+                SynonymsItem? GetSynonyms = JsonSerializer.Deserialize<SynonymsItem>(Content);
 
-                var Options = new JsonSerializerOptions
+                if (GetSynonyms == null)
                 {
-                    WriteIndented = true 
-                };
-
-                for (int i = 0; i < GetSynonyms.ACCEPT.Length; i++)
-                {
-                    string GetOriginal = GetSynonyms.ACCEPT[i];      
-                    TranslateApi.Enqueue("Synonyms.txt", FilePath + i, "ACCEPT", GetOriginal, string.Empty);
+                    return;
                 }
 
-                for (int i = 0; i < GetSynonyms.ACCEPTING.Length; i++)
+                for (int i = 0; i < GetSynonyms.ACCEPT?.Length; i++)
                 {
-                    string GetOriginal = GetSynonyms.ACCEPTING[i]; 
+                    string GetOriginal = GetSynonyms.ACCEPT[i];
+                    string Type = "ACCEPT";
+                    string Key = FilePath + "-" + Type +"[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.ACCEPTS.Length; i++)
+                for (int i = 0; i < GetSynonyms.ACCEPTING?.Length; i++)
+                {
+                    string GetOriginal = GetSynonyms.ACCEPTING[i];
+                    string Type = "ACCEPTING";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                }
+
+                for (int i = 0; i < GetSynonyms.ACCEPTS?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.ACCEPTS[i];
+                    string Type = "ACCEPTS";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.ASS.Length; i++)
+                for (int i = 0; i < GetSynonyms.ASS?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.ASS[i];
+                    string Type = "ASS";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.BEAST.Length; i++)
+                for (int i = 0; i < GetSynonyms.BEAST?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.BEAST[i];
+                    string Type = "BEAST";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.BEASTCOCK.Length; i++)
+                for (int i = 0; i < GetSynonyms.BEASTCOCK?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.BEASTCOCK[i];
+                    string Type = "BEASTCOCK";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.BITCH.Length; i++)
+                for (int i = 0; i < GetSynonyms.BITCH?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.BITCH[i];
+                    string Type = "BITCH";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
-                for (int i = 0; i < GetSynonyms.BOOBS.Length; i++)
+                for (int i = 0; i < GetSynonyms.BOOBS?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.BOOBS[i];
+                    string Type = "BOOBS";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.BREED.Length; i++)
+                for (int i = 0; i < GetSynonyms.BREED?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.BREED[i];
+                    string Type = "BREED";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.BUG.Length; i++)
+                for (int i = 0; i < GetSynonyms.BUG?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.BUG[i];
+                    string Type = "BUG";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.BUGCOCK.Length; i++)
+                for (int i = 0; i < GetSynonyms.BUGCOCK?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.BUGCOCK[i];
+                    string Type = "BUGCOCK";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.BUTTOCKS.Length; i++)
+                for (int i = 0; i < GetSynonyms.BUTTOCKS?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.BUTTOCKS[i];
+                    string Type = "BUTTOCKS";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.COCK.Length; i++)
+                for (int i = 0; i < GetSynonyms.COCK?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.COCK[i];
+                    string Type = "COCK";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.CREAM.Length; i++)
+                for (int i = 0; i < GetSynonyms.CREAM?.Length; i++)
                 {
-                    string GetOriginal = GetSynonyms.CREAM[i];                
+                    string GetOriginal = GetSynonyms.CREAM[i];
+                    string Type = "CREAM";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.CUM.Length; i++)
+                for (int i = 0; i < GetSynonyms.CUM?.Length; i++)
                 {
-                    string GetOriginal = GetSynonyms.CUM[i];    
+                    string GetOriginal = GetSynonyms.CUM[i];
+                    string Type = "CUM";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.CUMMING.Length; i++)
+                for (int i = 0; i < GetSynonyms.CUMMING?.Length; i++)
                 {
-                    string GetOriginal = GetSynonyms.CUMMING[i];           
+                    string GetOriginal = GetSynonyms.CUMMING[i];
+                    string Type = "CUMMING";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.CUMS.Length; i++)
+                for (int i = 0; i < GetSynonyms.CUMS?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.CUMS[i];
+                    string Type = "CUMS";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.DEAD.Length; i++)
+                for (int i = 0; i < GetSynonyms.DEAD?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.DEAD[i];
+                    string Type = "DEAD";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.EXPLORE.Length; i++)
+                for (int i = 0; i < GetSynonyms.EXPLORE?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.EXPLORE[i];
+                    string Type = "EXPLORE";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.EXPOSE.Length; i++)
+                for (int i = 0; i < GetSynonyms.EXPOSE?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.EXPOSE[i];
+                    string Type = "EXPOSE";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.FEAR.Length; i++)
+                for (int i = 0; i < GetSynonyms.FEAR?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.FEAR[i];
+                    string Type = "FEAR";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.FFAMILY.Length; i++)
+                for (int i = 0; i < GetSynonyms.FFAMILY?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.FFAMILY[i];
+                    string Type = "FFAMILY";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.FOREIGN.Length; i++)
+                for (int i = 0; i < GetSynonyms.FOREIGN?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.FOREIGN[i];
+                    string Type = "FOREIGN";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.FUCK.Length; i++)
+                for (int i = 0; i < GetSynonyms.FUCK?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.FUCK[i];
+                    string Type = "FUCK";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.FUCKED.Length; i++)
+                for (int i = 0; i < GetSynonyms.FUCKED?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.FUCKED[i];
+                    string Type = "FUCKED";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.FUCKING.Length; i++)
+                for (int i = 0; i < GetSynonyms.FUCKING?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.FUCKING[i];
+                    string Type = "FUCKING";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.FUCKS.Length; i++)
+                for (int i = 0; i < GetSynonyms.FUCKS?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.FUCKS[i];
+                    string Type = "FUCKS";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.GENWT.Length; i++)
+                for (int i = 0; i < GetSynonyms.GENWT?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.GENWT[i];
+                    string Type = "GENWT";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.GIRTH.Length; i++)
+                for (int i = 0; i < GetSynonyms.GIRTH?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.GIRTH[i];
+                    string Type = "GIRTH";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.HEAVING.Length; i++)
+                for (int i = 0; i < GetSynonyms.HEAVING?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.HEAVING[i];
+                    string Type = "HEAVING";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.HOLE.Length; i++)
+                for (int i = 0; i < GetSynonyms.HOLE?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.HOLE[i];
+                    string Type = "HOLE";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.HOLES.Length; i++)
+                for (int i = 0; i < GetSynonyms.HOLES?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.HOLES[i];
+                    string Type = "HOLES";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.HORNY.Length; i++)
+                for (int i = 0; i < GetSynonyms.HORNY?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.HORNY[i];
+                    string Type = "HORNY";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.HUGE.Length; i++)
+                for (int i = 0; i < GetSynonyms.HUGE?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.HUGE[i];
+                    string Type = "HUGE";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.HUGELOAD.Length; i++)
+                for (int i = 0; i < GetSynonyms.HUGELOAD?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.HUGELOAD[i];
+                    string Type = "HUGELOAD";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.INSERT.Length; i++)
+                for (int i = 0; i < GetSynonyms.INSERT?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.INSERT[i];
+                    string Type = "INSERT";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.INSERTED.Length; i++)
+                for (int i = 0; i < GetSynonyms.INSERTED?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.INSERTED[i];
+                    string Type = "INSERTED";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.INSERTING.Length; i++)
+                for (int i = 0; i < GetSynonyms.INSERTING?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.INSERTING[i];
+                    string Type = "INSERTING";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.INSERTS.Length; i++)
+                for (int i = 0; i < GetSynonyms.INSERTS?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.INSERTS[i];
+                    string Type = "INSERTS";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.JIGGLE.Length; i++)
+                for (int i = 0; i < GetSynonyms.JIGGLE?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.JIGGLE[i];
+                    string Type = "JIGGLE";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.JUICY.Length; i++)
+                for (int i = 0; i < GetSynonyms.JUICY?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.JUICY[i];
+                    string Type = "JUICY";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.LARGELOAD.Length; i++)
+                for (int i = 0; i < GetSynonyms.LARGELOAD?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.LARGELOAD[i];
+                    string Type = "LARGELOAD";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.LOUDLY.Length; i++)
+                for (int i = 0; i < GetSynonyms.LOUDLY?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.LOUDLY[i];
+                    string Type = "LOUDLY";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.MACHINE.Length; i++)
+                for (int i = 0; i < GetSynonyms.MACHINE?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.MACHINE[i];
+                    string Type = "MACHINE";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.MACHINESLIME.Length; i++)
+                for (int i = 0; i < GetSynonyms.MACHINESLIME?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.MACHINESLIME[i];
+                    string Type = "MACHINESLIME";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.MACHINESLIMY.Length; i++)
+                for (int i = 0; i < GetSynonyms.MACHINESLIMY?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.MACHINESLIMY[i];
+                    string Type = "MACHINESLIMY";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.METAL.Length; i++)
+                for (int i = 0; i < GetSynonyms.METAL?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.METAL[i];
+                    string Type = "METAL";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.MFAMILY.Length; i++)
+                for (int i = 0; i < GetSynonyms.MFAMILY?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.MFAMILY[i];
+                    string Type = "MFAMILY";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.MNONFAMILY.Length; i++)
+                for (int i = 0; i < GetSynonyms.MNONFAMILY?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.MNONFAMILY[i];
+                    string Type = "MNONFAMILY";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.MOAN.Length; i++)
+                for (int i = 0; i < GetSynonyms.MOAN?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.MOAN[i];
+                    string Type = "MOAN";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.MOANING.Length; i++)
+                for (int i = 0; i < GetSynonyms.MOANING?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.MOANING[i];
+                    string Type = "MOANING";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.MOANS.Length; i++)
+                for (int i = 0; i < GetSynonyms.MOANS?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.MOANS[i];
+                    string Type = "MOANS";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.MOUTH.Length; i++)
+                for (int i = 0; i < GetSynonyms.MOUTH?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.MOUTH[i];
+                    string Type = "MOUTH";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.OPENING.Length; i++)
+                for (int i = 0; i < GetSynonyms.OPENING?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.OPENING[i];
+                    string Type = "OPENING";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.PAIN.Length; i++)
+                for (int i = 0; i < GetSynonyms.PAIN?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.PAIN[i];
+                    string Type = "PAIN";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.PENIS.Length; i++)
+                for (int i = 0; i < GetSynonyms.PENIS?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.PENIS[i];
+                    string Type = "PENIS";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.PROBE.Length; i++)
+                for (int i = 0; i < GetSynonyms.PROBE?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.PROBE[i];
+                    string Type = "PROBE";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.PUSSY.Length; i++)
+                for (int i = 0; i < GetSynonyms.PUSSY?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.PUSSY[i];
+                    string Type = "PUSSY";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.QUIVERING.Length; i++)
+                for (int i = 0; i < GetSynonyms.QUIVERING?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.QUIVERING[i];
+                    string Type = "QUIVERING";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.RAPE.Length; i++)
+                for (int i = 0; i < GetSynonyms.RAPE?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.RAPE[i];
+                    string Type = "RAPE";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.RAPED.Length; i++)
+                for (int i = 0; i < GetSynonyms.RAPED?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.RAPED[i];
+                    string Type = "RAPED";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.SALTY.Length; i++)
+                for (int i = 0; i < GetSynonyms.SALTY?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.SALTY[i];
+                    string Type = "SALTY";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.SCREAM.Length; i++)
+                for (int i = 0; i < GetSynonyms.SCREAM?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.SCREAM[i];
+                    string Type = "SCREAM";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.SCREAMS.Length; i++)
+                for (int i = 0; i < GetSynonyms.SCREAMS?.Length; i++)
                 {
                     string GetOriginal = GetSynonyms.SCREAMS[i];
+                    string Type = "SCREAMS";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.SCUM.Length; i++)
+                for (int i = 0; i < GetSynonyms.SCUM?.Length; i++)
                 {
-                    GetSynonyms.SCUM[i] = GetAproposTranslate(GetSynonyms.SCUM[i]);
+                    string GetOriginal = GetSynonyms.SCUM[i];
+                    string Type = "SCUM";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.SLIME.Length; i++)
+                for (int i = 0; i < GetSynonyms.SLIME?.Length; i++)
                 {
-                    GetSynonyms.SLIME[i] = GetAproposTranslate(GetSynonyms.SLIME[i]);
+                    string GetOriginal = GetSynonyms.SLIME[i];
+                    string Type = "SLIME";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.SLIMY.Length; i++)
+                for (int i = 0; i < GetSynonyms.SLIMY?.Length; i++)
                 {
-                    GetSynonyms.SLIMY[i] = GetAproposTranslate(GetSynonyms.SLIMY[i]);
+                    string GetOriginal = GetSynonyms.SLIMY[i];
+                    string Type = "SLIMY";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.SLOPPY.Length; i++)
+                for (int i = 0; i < GetSynonyms.SLOPPY?.Length; i++)
                 {
-                    GetSynonyms.SLOPPY[i] = GetAproposTranslate(GetSynonyms.SLOPPY[i]);
+                    string GetOriginal = GetSynonyms.SLOPPY[i];
+                    string Type = "SLOPPY";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.SLOWLY.Length; i++)
+                for (int i = 0; i < GetSynonyms.SLOWLY?.Length; i++)
                 {
-                    GetSynonyms.SLOWLY[i] = GetAproposTranslate(GetSynonyms.SLOWLY[i]);
+                    string GetOriginal = GetSynonyms.SLOWLY[i];
+                    string Type = "SLOWLY";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.SLUTTY.Length; i++)
+                for (int i = 0; i < GetSynonyms.SLUTTY?.Length; i++)
                 {
-                    GetSynonyms.SLUTTY[i] = GetAproposTranslate(GetSynonyms.SLUTTY[i]);
+                    string GetOriginal = GetSynonyms.SLUTTY[i];
+                    string Type = "SLUTTY";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.SODOMIZE.Length; i++)
+                for (int i = 0; i < GetSynonyms.SODOMIZE?.Length; i++)
                 {
-                    GetSynonyms.SODOMIZE[i] = GetAproposTranslate(GetSynonyms.SODOMIZE[i]);
+                    string GetOriginal = GetSynonyms.SODOMIZE[i];
+                    string Type = "SODOMIZE";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.SODOMIZED.Length; i++)
+                for (int i = 0; i < GetSynonyms.SODOMIZED?.Length; i++)
                 {
-                    GetSynonyms.SODOMIZED[i] = GetAproposTranslate(GetSynonyms.SODOMIZED[i]);
+                    string GetOriginal = GetSynonyms.SODOMIZED[i];
+                    string Type = "SODOMIZED";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.SODOMIZES.Length; i++)
+                for (int i = 0; i < GetSynonyms.SODOMIZES?.Length; i++)
                 {
-                    GetSynonyms.SODOMIZES[i] = GetAproposTranslate(GetSynonyms.SODOMIZES[i]);
+                    string GetOriginal = GetSynonyms.SODOMIZES[i];
+                    string Type = "SODOMIZES";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.SODOMIZING.Length; i++)
+                for (int i = 0; i < GetSynonyms.SODOMIZING?.Length; i++)
                 {
-                    GetSynonyms.SODOMIZING[i] = GetAproposTranslate(GetSynonyms.SODOMIZING[i]);
+                    string GetOriginal = GetSynonyms.SODOMIZING[i];
+                    string Type = "SODOMIZING";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.SODOMY.Length; i++)
+                for (int i = 0; i < GetSynonyms.SODOMY?.Length; i++)
                 {
-                    GetSynonyms.SODOMY[i] = GetAproposTranslate(GetSynonyms.SODOMY[i]);
+                    string GetOriginal = GetSynonyms.SODOMY[i];
+                    string Type = "SODOMY";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.SOLID.Length; i++)
+                for (int i = 0; i < GetSynonyms.SOLID?.Length; i++)
                 {
-                    GetSynonyms.SOLID[i] = GetAproposTranslate(GetSynonyms.SOLID[i]);
+                    string GetOriginal = GetSynonyms.SOLID[i];
+                    string Type = "SOLID";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.STRAPON.Length; i++)
+                for (int i = 0; i < GetSynonyms.STRAPON?.Length; i++)
                 {
-                    GetSynonyms.STRAPON[i] = GetAproposTranslate(GetSynonyms.STRAPON[i]);
+                    string GetOriginal = GetSynonyms.STRAPON[i];
+                    string Type = "STRAPON";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.SUBMISSIVE.Length; i++)
+                for (int i = 0; i < GetSynonyms.SUBMISSIVE?.Length; i++)
                 {
-                    GetSynonyms.SUBMISSIVE[i] = GetAproposTranslate(GetSynonyms.SUBMISSIVE[i]);
+                    string GetOriginal = GetSynonyms.SUBMISSIVE[i];
+                    string Type = "SUBMISSIVE";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.SUBMIT.Length; i++)
+                for (int i = 0; i < GetSynonyms.SUBMIT?.Length; i++)
                 {
-                    GetSynonyms.SUBMIT[i] = GetAproposTranslate(GetSynonyms.SUBMIT[i]);
+                    string GetOriginal = GetSynonyms.SUBMIT[i];
+                    string Type = "SUBMIT";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.SWEARING.Length; i++)
+                for (int i = 0; i < GetSynonyms.SWEARING?.Length; i++)
                 {
-                    GetSynonyms.SWEARING[i] = GetAproposTranslate(GetSynonyms.SWEARING[i]);
+                    string GetOriginal = GetSynonyms.SWEARING[i];
+                    string Type = "SWEARING";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.TASTY.Length; i++)
+                for (int i = 0; i < GetSynonyms.TASTY?.Length; i++)
                 {
-                    GetSynonyms.TASTY[i] = GetAproposTranslate(GetSynonyms.TASTY[i]);
+                    string GetOriginal = GetSynonyms.TASTY[i];
+                    string Type = "TASTY";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.THICK.Length; i++)
+                for (int i = 0; i < GetSynonyms.THICK?.Length; i++)
                 {
-                    GetSynonyms.THICK[i] = GetAproposTranslate(GetSynonyms.THICK[i]);
+                    string GetOriginal = GetSynonyms.THICK[i];
+                    string Type = "THICK";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.TIGHTNESS.Length; i++)
+                for (int i = 0; i < GetSynonyms.TIGHTNESS?.Length; i++)
                 {
-                    GetSynonyms.TIGHTNESS[i] = GetAproposTranslate(GetSynonyms.TIGHTNESS[i]);
+                    string GetOriginal = GetSynonyms.TIGHTNESS[i];
+                    string Type = "TIGHTNESS";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.UNTHINKING.Length; i++)
+                for (int i = 0; i < GetSynonyms.UNTHINKING?.Length; i++)
                 {
-                    GetSynonyms.UNTHINKING[i] = GetAproposTranslate(GetSynonyms.UNTHINKING[i]);
+                    string GetOriginal = GetSynonyms.UNTHINKING[i];
+                    string Type = "UNTHINKING";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.VILE.Length; i++)
+                for (int i = 0; i < GetSynonyms.VILE?.Length; i++)
                 {
-                    GetSynonyms.VILE[i] = GetAproposTranslate(GetSynonyms.VILE[i]);
+                    string GetOriginal = GetSynonyms.VILE[i];
+                    string Type = "VILE";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.WET.Length; i++)
+                for (int i = 0; i < GetSynonyms.WET?.Length; i++)
                 {
-                    GetSynonyms.WET[i] = GetAproposTranslate(GetSynonyms.WET[i]);
+                    string GetOriginal = GetSynonyms.WET[i];
+                    string Type = "WET";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                for (int i = 0; i < GetSynonyms.WHORE.Length; i++)
+                for (int i = 0; i < GetSynonyms.WHORE?.Length; i++)
                 {
-                    GetSynonyms.WHORE[i] = GetAproposTranslate(GetSynonyms.WHORE[i]);
+                    string GetOriginal = GetSynonyms.WHORE[i];
+                    string Type = "WHORE";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
-                string GetJson = JsonSerializer.Serialize(GetSynonyms, new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                });
+                //string GetJson = JsonSerializer.Serialize(GetSynonyms, new JsonSerializerOptions
+                //{
+                //    WriteIndented = true
+                //});
                 
-                return GetJson;
+                //return GetJson;
             }
             else
             if (FileName == "WearAndTear_Descriptors.txt")
             {
                 WearAndTearItem GetWearAndTear = JsonSerializer.Deserialize<WearAndTearItem>(Content);
 
-                string GetJson = JsonSerializer.Serialize(GetWearAndTear, new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                });
+                //string GetJson = JsonSerializer.Serialize(GetWearAndTear, new JsonSerializerOptions
+                //{
+                //    WriteIndented = true
+                //});
 
-                return GetJson;
+                //return GetJson;
             }
             else
             if (FileName == "Arousal_Descriptors.txt")
@@ -516,18 +864,18 @@ namespace Apro2Trans
 
                 //Process
 
-                string GetJson = JsonSerializer.Serialize(GetArousal, new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                });
+                //string GetJson = JsonSerializer.Serialize(GetArousal, new JsonSerializerOptions
+                //{
+                //    WriteIndented = true
+                //});
 
-                return GetJson;
+                //return GetJson;
             }
             else
             {
                 if (!Content.Contains("1st Person"))
                 {
-                    return Content;
+                    return;
                 }
             }
 
@@ -535,36 +883,45 @@ namespace Apro2Trans
             AproposItem GetApropos = JsonSerializer.Deserialize<AproposItem>(Content);
 
             if (GetApropos._1stPerson != null)
-                for (int i = 0; i < GetApropos._1stPerson.Length; i++)
+                for (int i = 0; i < GetApropos._1stPerson?.Length; i++)
                 {
-                    string GetLine = GetApropos._1stPerson[i];
+                    string GetOriginal = GetApropos._1stPerson[i];
 
-                    GetApropos._1stPerson[i] = GetAproposTranslate(GetLine);
+                    string Type = "1stPerson";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
             if (GetApropos._2ndPerson != null)
-                for (int i = 0; i < GetApropos._2ndPerson.Length; i++)
+                for (int i = 0; i < GetApropos._2ndPerson?.Length; i++)
                 {
-                    string GetLine = GetApropos._2ndPerson[i];
+                    string GetOriginal = GetApropos._2ndPerson[i];
 
-                    GetApropos._2ndPerson[i] = GetAproposTranslate(GetLine);
+                    string Type = "2ndPerson";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
             if (GetApropos._3rdPerson != null)
-                for (int i = 0; i < GetApropos._3rdPerson.Length; i++)
+                for (int i = 0; i < GetApropos._3rdPerson?.Length; i++)
                 {
-                    string GetLine = GetApropos._3rdPerson[i];
+                    string GetOriginal = GetApropos._3rdPerson[i];
 
-                    GetApropos._3rdPerson[i] = GetAproposTranslate(GetLine);
+                    string Type = "3rdPerson";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
                 }
 
 
-            string GetJsonA = JsonSerializer.Serialize(GetApropos, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
+            //string GetJsonA = JsonSerializer.Serialize(GetApropos, new JsonSerializerOptions
+            //{
+            //    WriteIndented = true
+            //});
 
-            return GetJsonA;
+            //return GetJsonA;
         }
     }
 

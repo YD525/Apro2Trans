@@ -86,11 +86,16 @@ namespace Apro2Trans
             EngineConfig.PreTranslateEnable = true;
 
             EngineConfig.Save();
+
+            Engine.From = Languages.English;
+            Engine.To = Languages.English;
         }
+      
         public TranslationUnit? Dequeue(ref bool IsEnd)
         {
             return Engine.DequeueTranslated(ref IsEnd);
         }
+       
         public int Enqueue(string FileName, string Key, string Type, string Original, string AIParam)
         {
             TranslationUnit Unit = new TranslationUnit(
@@ -99,7 +104,7 @@ namespace Apro2Trans
             Type,
             Original,
             "",
-            AIParam,
+            "",
             Engine.From,
             Engine.To,
             100

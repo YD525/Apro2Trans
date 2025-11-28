@@ -16,35 +16,41 @@
             <Label VerticalAlignment="Center">
                 LMPort
             </Label>
-            <TextBox Width="100" VerticalAlignment="Center">
+            <TextBox Width="80" VerticalAlignment="Center" Name="LMPort" TextChanged="LMPort_TextChanged">
+                1234
+            </TextBox>
+
+            <Label VerticalAlignment="Center">
+                ThreadLimit
+            </Label>
+            <TextBox Width="50" VerticalAlignment="Center" Name="ThreadLimit" TextChanged="ThreadLimit_TextChanged">
+                25
             </TextBox>
 
             <Label VerticalAlignment="Center">
                 DBPath
             </Label>
 
-            <TextBox Width="200" VerticalAlignment="Center">
+            <TextBox Name="DBPath" Width="200" VerticalAlignment="Center">
+                C:\Users\52508\Downloads\DB\Apropos2.1.0.0.10 - DB ONLY - NO INCEST\Apropos2
             </TextBox>
 
-            <Button VerticalAlignment="Center" Margin="5 0 0 0">
-                Select
-            </Button>
 
             <Label VerticalAlignment="Center">
                 From
             </Label>
 
-            <ComboBox VerticalAlignment="Center" Width="100">
+            <ComboBox VerticalAlignment="Center" Width="100" Name="From" SelectionChanged="From_SelectionChanged">
             </ComboBox>
 
             <Label VerticalAlignment="Center">
                 To
             </Label>
 
-            <ComboBox VerticalAlignment="Center" Width="100">
+            <ComboBox VerticalAlignment="Center" Width="100" Name="To" SelectionChanged="To_SelectionChanged">
             </ComboBox>
 
-            <Button VerticalAlignment="Center" Margin="5 0 0 0">
+            <Button VerticalAlignment="Center" Margin="5 0 0 0" Click="StartTrans">
                 Start
             </Button>
         </StackPanel>
