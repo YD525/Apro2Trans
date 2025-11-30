@@ -14,15 +14,56 @@ namespace Apro2Trans
 {
     public class AproposHelper
     {
+        public static Thread? UISyncTrd = null;
+        public static Thread? TranslationSyncTrd = null;
+
+        public static List<TranslationUnit> Translateds = new List<TranslationUnit>();
+        public static bool StartTranslationSyncState = false;
+        public static void StartTranslationSyncService(bool Check)
+        {
+            if (Check)
+            {
+                if (!StartTranslationSyncState)
+                {
+                    StartTranslationSyncState = true;
+
+                    TranslationSyncTrd = new Thread(() =>
+                    {
+                        while (StartTranslationSyncState)
+                        {
+                            Thread.Sleep(1000);
+
+                            bool IsEnd = false;
+
+                            var GetUnit = Engine.DequeueTranslated(ref IsEnd);
+                            if (GetUnit != null)
+                            {
+                                Translateds.Add(GetUnit);
+                            }
+
+                            if (IsEnd)
+                            {
+                                StartTranslationSyncState = false;
+                            }
+                        }
+                    });
+
+                    TranslationSyncTrd.Start();
+                }
+            }
+            else
+            {
+                StartTranslationSyncState = false;
+            }
+        }
 
         public static SSELexApi TranslateApi = new SSELexApi();
         public static void ReadDB(string FilePath, string Suffix = ".txt")
         {
             Engine.InitTranslationCore(Engine.From, Engine.To);
 
-            new Thread(() => {
-
-                int Sucess = 0;
+            new Thread(() => 
+            {
                 var GetFiles = DataHelper.GetAllFile(FilePath, new List<string>() { Suffix });
 
                 foreach (var Get in GetFiles)
@@ -35,8 +76,15 @@ namespace Apro2Trans
                 int Total = RecordCount;
 
                 Engine.Start();
+                StartTranslationSyncService(true);
 
             }).Start();
+        }
+
+        public static void Close()
+        {
+            Engine.End();
+            StartTranslationSyncService(false);
         }
 
         public static void WriteDB()
@@ -62,7 +110,7 @@ namespace Apro2Trans
                     string Type = "ACCEPT";
                     string Key = FilePath + "-" + Type +"[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.ACCEPTING?.Length; i++)
@@ -71,7 +119,7 @@ namespace Apro2Trans
                     string Type = "ACCEPTING";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.ACCEPTS?.Length; i++)
@@ -80,7 +128,7 @@ namespace Apro2Trans
                     string Type = "ACCEPTS";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.ASS?.Length; i++)
@@ -89,7 +137,7 @@ namespace Apro2Trans
                     string Type = "ASS";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.BEAST?.Length; i++)
@@ -98,7 +146,7 @@ namespace Apro2Trans
                     string Type = "BEAST";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.BEASTCOCK?.Length; i++)
@@ -107,7 +155,7 @@ namespace Apro2Trans
                     string Type = "BEASTCOCK";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.BITCH?.Length; i++)
@@ -116,7 +164,7 @@ namespace Apro2Trans
                     string Type = "BITCH";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
                 for (int i = 0; i < GetSynonyms.BOOBS?.Length; i++)
                 {
@@ -124,7 +172,7 @@ namespace Apro2Trans
                     string Type = "BOOBS";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.BREED?.Length; i++)
@@ -133,7 +181,7 @@ namespace Apro2Trans
                     string Type = "BREED";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.BUG?.Length; i++)
@@ -142,7 +190,7 @@ namespace Apro2Trans
                     string Type = "BUG";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.BUGCOCK?.Length; i++)
@@ -151,7 +199,7 @@ namespace Apro2Trans
                     string Type = "BUGCOCK";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.BUTTOCKS?.Length; i++)
@@ -160,7 +208,7 @@ namespace Apro2Trans
                     string Type = "BUTTOCKS";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.COCK?.Length; i++)
@@ -169,7 +217,7 @@ namespace Apro2Trans
                     string Type = "COCK";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.CREAM?.Length; i++)
@@ -178,7 +226,7 @@ namespace Apro2Trans
                     string Type = "CREAM";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.CUM?.Length; i++)
@@ -187,7 +235,7 @@ namespace Apro2Trans
                     string Type = "CUM";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.CUMMING?.Length; i++)
@@ -196,7 +244,7 @@ namespace Apro2Trans
                     string Type = "CUMMING";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.CUMS?.Length; i++)
@@ -205,7 +253,7 @@ namespace Apro2Trans
                     string Type = "CUMS";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.DEAD?.Length; i++)
@@ -214,7 +262,7 @@ namespace Apro2Trans
                     string Type = "DEAD";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.EXPLORE?.Length; i++)
@@ -223,7 +271,7 @@ namespace Apro2Trans
                     string Type = "EXPLORE";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.EXPOSE?.Length; i++)
@@ -232,7 +280,7 @@ namespace Apro2Trans
                     string Type = "EXPOSE";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.FEAR?.Length; i++)
@@ -241,7 +289,7 @@ namespace Apro2Trans
                     string Type = "FEAR";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.FFAMILY?.Length; i++)
@@ -250,7 +298,7 @@ namespace Apro2Trans
                     string Type = "FFAMILY";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.FOREIGN?.Length; i++)
@@ -259,7 +307,7 @@ namespace Apro2Trans
                     string Type = "FOREIGN";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.FUCK?.Length; i++)
@@ -268,7 +316,7 @@ namespace Apro2Trans
                     string Type = "FUCK";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.FUCKED?.Length; i++)
@@ -277,7 +325,7 @@ namespace Apro2Trans
                     string Type = "FUCKED";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.FUCKING?.Length; i++)
@@ -286,7 +334,7 @@ namespace Apro2Trans
                     string Type = "FUCKING";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.FUCKS?.Length; i++)
@@ -295,7 +343,7 @@ namespace Apro2Trans
                     string Type = "FUCKS";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.GENWT?.Length; i++)
@@ -304,7 +352,7 @@ namespace Apro2Trans
                     string Type = "GENWT";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.GIRTH?.Length; i++)
@@ -313,7 +361,7 @@ namespace Apro2Trans
                     string Type = "GIRTH";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.HEAVING?.Length; i++)
@@ -322,7 +370,7 @@ namespace Apro2Trans
                     string Type = "HEAVING";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.HOLE?.Length; i++)
@@ -331,7 +379,7 @@ namespace Apro2Trans
                     string Type = "HOLE";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.HOLES?.Length; i++)
@@ -340,7 +388,7 @@ namespace Apro2Trans
                     string Type = "HOLES";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.HORNY?.Length; i++)
@@ -349,7 +397,7 @@ namespace Apro2Trans
                     string Type = "HORNY";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.HUGE?.Length; i++)
@@ -358,7 +406,7 @@ namespace Apro2Trans
                     string Type = "HUGE";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.HUGELOAD?.Length; i++)
@@ -367,7 +415,7 @@ namespace Apro2Trans
                     string Type = "HUGELOAD";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.INSERT?.Length; i++)
@@ -376,7 +424,7 @@ namespace Apro2Trans
                     string Type = "INSERT";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.INSERTED?.Length; i++)
@@ -385,7 +433,7 @@ namespace Apro2Trans
                     string Type = "INSERTED";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.INSERTING?.Length; i++)
@@ -394,7 +442,7 @@ namespace Apro2Trans
                     string Type = "INSERTING";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.INSERTS?.Length; i++)
@@ -403,7 +451,7 @@ namespace Apro2Trans
                     string Type = "INSERTS";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.JIGGLE?.Length; i++)
@@ -412,7 +460,7 @@ namespace Apro2Trans
                     string Type = "JIGGLE";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.JUICY?.Length; i++)
@@ -421,7 +469,7 @@ namespace Apro2Trans
                     string Type = "JUICY";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.LARGELOAD?.Length; i++)
@@ -430,7 +478,7 @@ namespace Apro2Trans
                     string Type = "LARGELOAD";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.LOUDLY?.Length; i++)
@@ -439,7 +487,7 @@ namespace Apro2Trans
                     string Type = "LOUDLY";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.MACHINE?.Length; i++)
@@ -448,7 +496,7 @@ namespace Apro2Trans
                     string Type = "MACHINE";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.MACHINESLIME?.Length; i++)
@@ -457,7 +505,7 @@ namespace Apro2Trans
                     string Type = "MACHINESLIME";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.MACHINESLIMY?.Length; i++)
@@ -466,7 +514,7 @@ namespace Apro2Trans
                     string Type = "MACHINESLIMY";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.METAL?.Length; i++)
@@ -475,7 +523,7 @@ namespace Apro2Trans
                     string Type = "METAL";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.MFAMILY?.Length; i++)
@@ -484,7 +532,7 @@ namespace Apro2Trans
                     string Type = "MFAMILY";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.MNONFAMILY?.Length; i++)
@@ -493,7 +541,7 @@ namespace Apro2Trans
                     string Type = "MNONFAMILY";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.MOAN?.Length; i++)
@@ -502,7 +550,7 @@ namespace Apro2Trans
                     string Type = "MOAN";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.MOANING?.Length; i++)
@@ -511,7 +559,7 @@ namespace Apro2Trans
                     string Type = "MOANING";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.MOANS?.Length; i++)
@@ -520,7 +568,7 @@ namespace Apro2Trans
                     string Type = "MOANS";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.MOUTH?.Length; i++)
@@ -529,7 +577,7 @@ namespace Apro2Trans
                     string Type = "MOUTH";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.OPENING?.Length; i++)
@@ -538,7 +586,7 @@ namespace Apro2Trans
                     string Type = "OPENING";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.PAIN?.Length; i++)
@@ -547,7 +595,7 @@ namespace Apro2Trans
                     string Type = "PAIN";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.PENIS?.Length; i++)
@@ -556,7 +604,7 @@ namespace Apro2Trans
                     string Type = "PENIS";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.PROBE?.Length; i++)
@@ -565,7 +613,7 @@ namespace Apro2Trans
                     string Type = "PROBE";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.PUSSY?.Length; i++)
@@ -574,7 +622,7 @@ namespace Apro2Trans
                     string Type = "PUSSY";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.QUIVERING?.Length; i++)
@@ -583,7 +631,7 @@ namespace Apro2Trans
                     string Type = "QUIVERING";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.RAPE?.Length; i++)
@@ -592,7 +640,7 @@ namespace Apro2Trans
                     string Type = "RAPE";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.RAPED?.Length; i++)
@@ -601,7 +649,7 @@ namespace Apro2Trans
                     string Type = "RAPED";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.SALTY?.Length; i++)
@@ -610,7 +658,7 @@ namespace Apro2Trans
                     string Type = "SALTY";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.SCREAM?.Length; i++)
@@ -619,7 +667,7 @@ namespace Apro2Trans
                     string Type = "SCREAM";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.SCREAMS?.Length; i++)
@@ -628,7 +676,7 @@ namespace Apro2Trans
                     string Type = "SCREAMS";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.SCUM?.Length; i++)
@@ -637,7 +685,7 @@ namespace Apro2Trans
                     string Type = "SCUM";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.SLIME?.Length; i++)
@@ -646,7 +694,7 @@ namespace Apro2Trans
                     string Type = "SLIME";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.SLIMY?.Length; i++)
@@ -655,7 +703,7 @@ namespace Apro2Trans
                     string Type = "SLIMY";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.SLOPPY?.Length; i++)
@@ -664,7 +712,7 @@ namespace Apro2Trans
                     string Type = "SLOPPY";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.SLOWLY?.Length; i++)
@@ -673,7 +721,7 @@ namespace Apro2Trans
                     string Type = "SLOWLY";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.SLUTTY?.Length; i++)
@@ -682,7 +730,7 @@ namespace Apro2Trans
                     string Type = "SLUTTY";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.SODOMIZE?.Length; i++)
@@ -691,7 +739,7 @@ namespace Apro2Trans
                     string Type = "SODOMIZE";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.SODOMIZED?.Length; i++)
@@ -700,7 +748,7 @@ namespace Apro2Trans
                     string Type = "SODOMIZED";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.SODOMIZES?.Length; i++)
@@ -709,7 +757,7 @@ namespace Apro2Trans
                     string Type = "SODOMIZES";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.SODOMIZING?.Length; i++)
@@ -718,7 +766,7 @@ namespace Apro2Trans
                     string Type = "SODOMIZING";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.SODOMY?.Length; i++)
@@ -727,7 +775,7 @@ namespace Apro2Trans
                     string Type = "SODOMY";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.SOLID?.Length; i++)
@@ -736,7 +784,7 @@ namespace Apro2Trans
                     string Type = "SOLID";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.STRAPON?.Length; i++)
@@ -745,7 +793,7 @@ namespace Apro2Trans
                     string Type = "STRAPON";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.SUBMISSIVE?.Length; i++)
@@ -754,7 +802,7 @@ namespace Apro2Trans
                     string Type = "SUBMISSIVE";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.SUBMIT?.Length; i++)
@@ -763,7 +811,7 @@ namespace Apro2Trans
                     string Type = "SUBMIT";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.SWEARING?.Length; i++)
@@ -772,7 +820,7 @@ namespace Apro2Trans
                     string Type = "SWEARING";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.TASTY?.Length; i++)
@@ -781,7 +829,7 @@ namespace Apro2Trans
                     string Type = "TASTY";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.THICK?.Length; i++)
@@ -790,7 +838,7 @@ namespace Apro2Trans
                     string Type = "THICK";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.TIGHTNESS?.Length; i++)
@@ -799,7 +847,7 @@ namespace Apro2Trans
                     string Type = "TIGHTNESS";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.UNTHINKING?.Length; i++)
@@ -808,7 +856,7 @@ namespace Apro2Trans
                     string Type = "UNTHINKING";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.VILE?.Length; i++)
@@ -817,7 +865,7 @@ namespace Apro2Trans
                     string Type = "VILE";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.WET?.Length; i++)
@@ -826,7 +874,7 @@ namespace Apro2Trans
                     string Type = "WET";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 for (int i = 0; i < GetSynonyms.WHORE?.Length; i++)
@@ -835,7 +883,7 @@ namespace Apro2Trans
                     string Type = "WHORE";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
                 //string GetJson = JsonSerializer.Serialize(GetSynonyms, new JsonSerializerOptions
@@ -890,7 +938,7 @@ namespace Apro2Trans
                     string Type = "1stPerson";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
             if (GetApropos._2ndPerson != null)
@@ -901,7 +949,7 @@ namespace Apro2Trans
                     string Type = "2ndPerson";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
             if (GetApropos._3rdPerson != null)
@@ -912,7 +960,7 @@ namespace Apro2Trans
                     string Type = "3rdPerson";
                     string Key = FilePath + "-" + Type + "[" + i + "]";
 
-                    RecordCount = TranslateApi.Enqueue("Synonyms.txt", Key, Type, GetOriginal, string.Empty);
+                    RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
 
 
