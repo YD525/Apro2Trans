@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Apro2Trans"
         mc:Ignorable="d"
-        Title="Apro2Trans" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="Apro2Trans" Height="450" Width="800" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
@@ -35,7 +36,6 @@
                 C:\Users\52508\Downloads\DB\Apropos2.1.0.0.10 - DB ONLY - NO INCEST\Apropos2
             </TextBox>
 
-
             <Label VerticalAlignment="Center">
                 From
             </Label>
@@ -55,7 +55,43 @@
             </Button>
         </StackPanel>
 
-        <ListBox Name="Log" Grid.Row="1">
-        </ListBox>
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" Orientation="Horizontal">
+            <Label Foreground="Green">
+                Progress
+            </Label>
+
+            <Label Name="Progress">
+                (0/0)
+            </Label>
+
+            <Label Foreground="Blue">
+                Thread
+            </Label>
+
+            <Label Name="ThreadInFo">
+                (Current:0,Max:0)
+            </Label>
+
+            <Label Foreground="Green">
+                State
+            </Label>
+
+            <Label Name="State">
+            </Label>
+        </StackPanel>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            
+            <ListBox Name="Log">
+            </ListBox>
+
+            <TextBox Name="Input" Grid.Column="1" IsReadOnly="True">
+            </TextBox>
+        </Grid>
+       
     </Grid>
 </Window>

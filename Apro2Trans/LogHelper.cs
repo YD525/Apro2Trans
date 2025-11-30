@@ -41,6 +41,13 @@ namespace Apro2Trans
                     if (Any is AICall)
                     {
                         AICall GetCall = (AICall)Any;
+
+                        if (GetCall.SendString.Length > 0)
+                        {
+                            DeFine.WorkWin.Input.Dispatcher.Invoke(new Action(() => {
+                                DeFine.WorkWin.Input.Text = GetCall.SendString;
+                            }));
+                        }
                     }
                     if (Any is PlatformCall)
                     {

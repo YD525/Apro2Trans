@@ -24,9 +24,20 @@ namespace Apro2Trans
         {
             InitializeComponent();
             LogHelper.Init();
+            DeFine.WorkWin = this;
+            AproposHelper.StartUISyncService(true);
         }
 
-        public static List<Languages> GetSupportedLanguages()
+        public void SetLog(string Msg)
+        {
+            Log.Dispatcher.Invoke(new Action(() => 
+            {
+                Log.Items.Add(Msg);
+                Log.ScrollIntoView(Log.Items[Log.Items.Count - 1]);
+            }));
+        }
+
+        public List<Languages> GetSupportedLanguages()
         {
             List<Languages> LanguageList = new List<Languages>();
 
@@ -60,7 +71,10 @@ namespace Apro2Trans
                 if (Directory.Exists(DBPath.Text))
                 {
                     string GetPath = DBPath.Text;
+                    
                     AproposHelper.ReadDB(GetPath);
+
+                    Log.Items.Clear();
                 }
             }
         }

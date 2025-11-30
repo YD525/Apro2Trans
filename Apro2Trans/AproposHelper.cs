@@ -13,6 +13,7 @@ using System.IO;
 using System.Windows.Interop;
 using System.Collections;
 using PhoenixEngine.PlatformManagement.LocalAI;
+using System.Runtime.CompilerServices;
 
 namespace Apro2Trans
 {
@@ -22,9 +23,46 @@ namespace Apro2Trans
         public static Thread? TranslationSyncTrd = null;
 
         public static Dictionary<string,TranslationUnit> Translateds = new Dictionary<string,TranslationUnit>();
-        public static bool StartTranslationSyncState = false;
+      
+
+        public static bool StartUISyncState = false;
+        public static void StartUISyncService(bool Check)
+        {
+            if (Check)
+            {
+                if (!StartUISyncState)
+                {
+                    StartUISyncState = true;
+
+                    UISyncTrd = new Thread(() =>
+                    {
+                        while (StartUISyncState)
+                        {
+                            Thread.Sleep(1000);
+                            DeFine.WorkWin.Dispatcher.Invoke(new Action(() => 
+                            {
+                                DeFine.WorkWin.ThreadInFo.Content = string.Format("(Current:{0},Max:{1})", Engine.GetThreadCount(),EngineConfig.MaxThreadCount);
+                                DeFine.WorkWin.Progress.Content = string.Format("({0}/{1})", Translateds.Count, Total);
+                                if (Working)
+                                {
+                                    DeFine.WorkWin.State.Content = "Working";
+                                }
+                                else
+                                {
+                                    DeFine.WorkWin.State.Content = "";
+                                }
+                            }));
+                        }
+                    });
+
+                    UISyncTrd.Start();
+                }
+            }
+        }
 
         public static bool Working = false;
+
+        public static bool StartTranslationSyncState = false;
         public static void StartTranslationSyncService(bool Check)
         {
             if (Check)
@@ -63,7 +101,14 @@ namespace Apro2Trans
                             {
                                 Working = false;
                                 StartTranslationSyncState = false;
+
+                                Log("Write it into the translation record.");
+
                                 WriteDB();
+
+                                Thread.Sleep(100);
+
+                                Log("All records have been translated; please check your local file.");
                             }
                         }
                     });
@@ -79,7 +124,8 @@ namespace Apro2Trans
         }
 
         private static string LastReadFilePath = "";
-       
+
+        public static int Total = 0;
         public static SSELexApi TranslateApi = new SSELexApi();
         public static void ReadDB(string FilePath, string Suffix = ".txt")
         {
@@ -104,7 +150,7 @@ namespace Apro2Trans
                     ReadAproposRecords(Get.FilePath, Get.FileName, GetContent);
                 }
 
-                int Total = RecordCount;
+                Total = RecordCount;
                 Log(Total + " records have been added.");
                 Engine.SkipWordAnalysis(true);
                 Log("Skip to word analysis");
@@ -1209,8 +1255,8 @@ namespace Apro2Trans
         }
 
         public static void Log(string Msg)
-        { 
-        
+        {
+            DeFine.WorkWin.SetLog(Msg);
         }
 
         public static int RecordCount = 0;
