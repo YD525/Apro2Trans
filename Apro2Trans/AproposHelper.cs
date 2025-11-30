@@ -39,8 +39,6 @@ namespace Apro2Trans
 
                         while (StartTranslationSyncState)
                         {
-                            Thread.Sleep(1000);
-
                             bool IsEnd = false;
 
                             var GetUnit = Engine.DequeueTranslated(ref IsEnd);
@@ -48,8 +46,17 @@ namespace Apro2Trans
                             {
                                 if (!Translateds.ContainsKey(GetUnit.Key))
                                 {
-                                    Translateds.Add(GetUnit.Key,GetUnit);
+                                    GetUnit.TransText = Engine.AppendDollarWrappedReplacements(GetUnit.TransText);
+                                    Translateds.Add(GetUnit.Key, GetUnit);
                                 }
+                                else
+                                {
+
+                                }
+                            }
+                            else
+                            {
+                                Thread.Sleep(500);
                             }
 
                             if (IsEnd)
@@ -81,6 +88,13 @@ namespace Apro2Trans
 
             new Thread(() => 
             {
+                Thread.Sleep(100);
+
+                if (Working)
+                {
+                    return;
+                }
+
                 var GetFiles = DataHelper.GetAllFile(FilePath, new List<string>() { Suffix });
 
                 foreach (var Get in GetFiles)
@@ -91,7 +105,9 @@ namespace Apro2Trans
                 }
 
                 int Total = RecordCount;
-
+                Log(Total + " records have been added.");
+                Engine.SkipWordAnalysis(true);
+                Log("Skip to word analysis");
                 Engine.Start();
                 StartTranslationSyncService(true);
 
