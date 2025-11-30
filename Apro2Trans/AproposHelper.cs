@@ -10,6 +10,9 @@ using PhoenixEngine.TranslateManage;
 using PhoenixEngine.EngineManagement;
 using System.Security.RightsManagement;
 using System.IO;
+using System.Windows.Interop;
+using System.Collections;
+using PhoenixEngine.PlatformManagement.LocalAI;
 
 namespace Apro2Trans
 {
@@ -99,6 +102,35 @@ namespace Apro2Trans
             Engine.End();
             StartTranslationSyncService(false);
         }
+
+        public static string? ExtractContent(string AiResponseJson)
+        {
+            if (string.IsNullOrWhiteSpace(AiResponseJson))
+                return null;
+
+            try
+            {
+                using (JsonDocument Doc = JsonDocument.Parse(AiResponseJson))
+                {
+                    
+                    JsonElement Choices = Doc.RootElement.GetProperty("choices");
+                    if (Choices.GetArrayLength() > 0)
+                    {
+                        JsonElement FirstChoice = Choices[0];
+                        JsonElement Message = FirstChoice.GetProperty("message");
+                        string Content = Message.GetProperty("content").GetString();
+                        return Content;
+                    }
+                }
+            }
+            catch (JsonException ex)
+            {
+                
+            }
+
+            return null;
+        }
+
         public static void WriteDB()
         {
             if (!Directory.Exists(LastReadFilePath) || LastReadFilePath.Trim().Length == 0)
@@ -122,7 +154,7 @@ namespace Apro2Trans
 
                     if (GetSynonyms == null)
                     {
-                        return;
+                        continue;
                     }
 
                     for (int i = 0; i < GetSynonyms.ACCEPT?.Length; i++)
@@ -1111,7 +1143,7 @@ namespace Apro2Trans
 
                 if (GetApropos == null)
                 {
-                    return;
+                    continue;
                 }
 
                 if (GetApropos._1stPerson != null)
@@ -1158,13 +1190,28 @@ namespace Apro2Trans
                 DataHelper.WriteFile(FilePath, Encoding.UTF8.GetBytes(GetJson));
                 continue;
             }
-
-          
         }
 
         public static int RecordCount = 0;
         public static void ReadAproposRecords(string FilePath, string FileName, string Content)
         {
+            string Prompt = $@"
+You are a JSON fixer.
+I will give you a piece of malformed or broken JSON.
+
+Your task:
+1. Automatically fix all syntax errors.
+2. Keep the original structure, field names, and content.
+3. Only fix formatting; do not change any text content.
+4. Output only the final corrected JSON.
+5. Do NOT output explanations, comments, or any extra text.
+
+[Original JSON]
+{Content}
+
+Return ONLY the fixed JSON.
+";
+
             if (FileName == "Synonyms.txt")
             {
                 SynonymsItem? GetSynonyms = JsonSerializer.Deserialize<SynonymsItem>(Content);
@@ -1997,7 +2044,40 @@ namespace Apro2Trans
                 }
             }
 
-            AproposItem GetApropos = JsonSerializer.Deserialize<AproposItem>(Content);
+            AproposItem ?GetApropos = null;
+
+            try 
+            { 
+                GetApropos = JsonSerializer.Deserialize<AproposItem>(Content);
+            }
+            catch(Exception Ex) 
+            {
+                //[Apropos2 DB Update] - The JSON has an incorrect format... 
+                //Since we're already here, let's just use AI to fix it without thinking.
+                TryAgain:
+                LMStudio NLMStudio = new LMStudio();
+                string MsgRecv = "";
+                NLMStudio.CallAI(Prompt, ref MsgRecv);
+
+                if (MsgRecv.Length > 0)
+                {
+                    string? GetAIResult = ExtractContent(MsgRecv);
+                    if (GetAIResult != null)
+                    {
+                        //Input the AI-repaired JSON
+                        //If you're wrong, just go to.
+                        try 
+                        {
+                            GetApropos = JsonSerializer.Deserialize<AproposItem>(GetAIResult);
+                        }
+                        catch 
+                        {
+                            Thread.Sleep(100);
+                            goto TryAgain;
+                        }
+                    }
+                }
+            }
 
             if (GetApropos == null)
             {
