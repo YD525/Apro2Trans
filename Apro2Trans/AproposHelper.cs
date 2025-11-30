@@ -153,7 +153,7 @@ namespace Apro2Trans
                 Total = RecordCount;
                 Log(Total + " records have been added.");
                 Engine.SkipWordAnalysis(true);
-                Log("Skip to word analysis");
+                Log("Disable word analysis");
                 Engine.Start();
                 StartTranslationSyncService(true);
 
