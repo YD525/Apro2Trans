@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using PhoenixEngine.TranslateManage;
 using PhoenixEngine.EngineManagement;
 using System.Security.RightsManagement;
+using System.IO;
 
 namespace Apro2Trans
 {
@@ -17,8 +18,10 @@ namespace Apro2Trans
         public static Thread? UISyncTrd = null;
         public static Thread? TranslationSyncTrd = null;
 
-        public static List<TranslationUnit> Translateds = new List<TranslationUnit>();
+        public static Dictionary<string,TranslationUnit> Translateds = new Dictionary<string,TranslationUnit>();
         public static bool StartTranslationSyncState = false;
+
+        public static bool Working = false;
         public static void StartTranslationSyncService(bool Check)
         {
             if (Check)
@@ -29,6 +32,8 @@ namespace Apro2Trans
 
                     TranslationSyncTrd = new Thread(() =>
                     {
+                        Working = true;
+
                         while (StartTranslationSyncState)
                         {
                             Thread.Sleep(1000);
@@ -38,12 +43,17 @@ namespace Apro2Trans
                             var GetUnit = Engine.DequeueTranslated(ref IsEnd);
                             if (GetUnit != null)
                             {
-                                Translateds.Add(GetUnit);
+                                if (!Translateds.ContainsKey(GetUnit.Key))
+                                {
+                                    Translateds.Add(GetUnit.Key,GetUnit);
+                                }
                             }
 
                             if (IsEnd)
                             {
+                                Working = false;
                                 StartTranslationSyncState = false;
+                                WriteDB();
                             }
                         }
                     });
@@ -54,12 +64,16 @@ namespace Apro2Trans
             else
             {
                 StartTranslationSyncState = false;
+                Working = false;
             }
         }
 
+        private static string LastReadFilePath = "";
+       
         public static SSELexApi TranslateApi = new SSELexApi();
         public static void ReadDB(string FilePath, string Suffix = ".txt")
         {
+            LastReadFilePath = FilePath;
             Engine.InitTranslationCore(Engine.From, Engine.To);
 
             new Thread(() => 
@@ -79,17 +93,1073 @@ namespace Apro2Trans
                 StartTranslationSyncService(true);
 
             }).Start();
-        }
-
+        } 
         public static void Close()
         {
             Engine.End();
             StartTranslationSyncService(false);
         }
-
         public static void WriteDB()
-        { 
-        
+        {
+            if (!Directory.Exists(LastReadFilePath) || LastReadFilePath.Trim().Length == 0)
+            {
+                return;
+            }
+            var GetFiles = DataHelper.GetAllFile(LastReadFilePath, new List<string>() { ".txt" });
+
+            foreach (var Get in GetFiles)
+            {
+                string Content = DataHelper.ReadFileByStr(Get.FilePath, Encoding.UTF8);
+
+                string FileName = Get.FileName;
+                string FilePath = Get.FilePath;
+
+                string GetJson = "";
+
+                if (FileName == "Synonyms.txt")
+                {
+                    SynonymsItem? GetSynonyms = JsonSerializer.Deserialize<SynonymsItem>(Content);
+
+                    if (GetSynonyms == null)
+                    {
+                        return;
+                    }
+
+                    for (int i = 0; i < GetSynonyms.ACCEPT?.Length; i++)
+                    {
+                        string Type = "ACCEPT";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.ACCEPT[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.ACCEPTING?.Length; i++)
+                    {
+                        string Type = "ACCEPTING";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.ACCEPTING[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.ACCEPTS?.Length; i++)
+                    {
+                        string Type = "ACCEPTS";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.ACCEPTS[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.ASS?.Length; i++)
+                    {
+                        string Type = "ASS";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.ASS[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.BEAST?.Length; i++)
+                    {
+                        string Type = "BEAST";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.BEAST[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.BEASTCOCK?.Length; i++)
+                    {
+                        string Type = "BEASTCOCK";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.BEASTCOCK[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.BITCH?.Length; i++)
+                    {
+                        string Type = "BITCH";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.BITCH[i] = Translateds[Key].TransText;
+                        }
+                    }
+                    for (int i = 0; i < GetSynonyms.BOOBS?.Length; i++)
+                    {
+                        string Type = "BOOBS";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.BOOBS[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.BREED?.Length; i++)
+                    {
+                        string Type = "BREED";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.BREED[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.BUG?.Length; i++)
+                    {
+                        string Type = "BUG";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.BUG[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.BUGCOCK?.Length; i++)
+                    {
+                        string Type = "BUGCOCK";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.BUGCOCK[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.BUTTOCKS?.Length; i++)
+                    {
+                        string Type = "BUTTOCKS";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.BUTTOCKS[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.COCK?.Length; i++)
+                    {
+                        string Type = "COCK";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.COCK[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.CREAM?.Length; i++)
+                    {
+                        string Type = "CREAM";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.CREAM[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.CUM?.Length; i++)
+                    {
+                        string Type = "CUM";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.CUM[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.CUMMING?.Length; i++)
+                    {
+                        string Type = "CUMMING";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.CUMMING[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.CUMS?.Length; i++)
+                    {
+                        string Type = "CUMS";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.CUMS[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.DEAD?.Length; i++)
+                    {
+                        string Type = "DEAD";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.DEAD[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.EXPLORE?.Length; i++)
+                    {
+                        string Type = "EXPLORE";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.EXPLORE[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.EXPOSE?.Length; i++)
+                    {
+                        string Type = "EXPOSE";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.EXPOSE[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.FEAR?.Length; i++)
+                    {
+                        string Type = "FEAR";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.FEAR[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.FFAMILY?.Length; i++)
+                    {
+                        string Type = "FFAMILY";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.FFAMILY[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.FOREIGN?.Length; i++)
+                    {
+                        string Type = "FOREIGN";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.FOREIGN[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.FUCK?.Length; i++)
+                    {
+                        string Type = "FUCK";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.FUCK[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.FUCKED?.Length; i++)
+                    {
+                        string Type = "FUCKED";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.FUCKED[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.FUCKING?.Length; i++)
+                    {
+                        string Type = "FUCKING";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.FUCKING[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.FUCKS?.Length; i++)
+                    {
+                        string Type = "FUCKS";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.FUCKS[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.GENWT?.Length; i++)
+                    {
+                        string Type = "GENWT";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.GENWT[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.GIRTH?.Length; i++)
+                    {
+                        string Type = "GIRTH";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.GIRTH[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.HEAVING?.Length; i++)
+                    {
+                        string Type = "HEAVING";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.HEAVING[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.HOLE?.Length; i++)
+                    {
+                        string Type = "HOLE";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.HOLE[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.HOLES?.Length; i++)
+                    {
+                        string Type = "HOLES";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.HOLES[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.HORNY?.Length; i++)
+                    {
+                        string Type = "HORNY";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.HORNY[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.HUGE?.Length; i++)
+                    {
+                        string Type = "HUGE";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.HUGE[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.HUGELOAD?.Length; i++)
+                    {
+                        string Type = "HUGELOAD";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.HUGELOAD[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.INSERT?.Length; i++)
+                    {
+                        string Type = "INSERT";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.INSERT[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.INSERTED?.Length; i++)
+                    {
+                        string Type = "INSERTED";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.INSERTED[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.INSERTING?.Length; i++)
+                    {
+                        string Type = "INSERTING";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.INSERTING[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.INSERTS?.Length; i++)
+                    {
+                        string Type = "INSERTS";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.INSERTS[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.JIGGLE?.Length; i++)
+                    {
+                        string Type = "JIGGLE";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.JIGGLE[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.JUICY?.Length; i++)
+                    {
+                        string Type = "JUICY";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.JUICY[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.LARGELOAD?.Length; i++)
+                    {
+                        string Type = "LARGELOAD";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.LARGELOAD[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.LOUDLY?.Length; i++)
+                    {
+                        string Type = "LOUDLY";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.LOUDLY[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.MACHINE?.Length; i++)
+                    {
+                        string Type = "MACHINE";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.MACHINE[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.MACHINESLIME?.Length; i++)
+                    {
+                        string Type = "MACHINESLIME";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.MACHINESLIME[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.MACHINESLIMY?.Length; i++)
+                    {
+                        string Type = "MACHINESLIMY";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.MACHINESLIMY[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.METAL?.Length; i++)
+                    {
+                        string Type = "METAL";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.METAL[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.MFAMILY?.Length; i++)
+                    {
+                        string Type = "MFAMILY";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.MFAMILY[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.MNONFAMILY?.Length; i++)
+                    {
+                        string Type = "MNONFAMILY";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.MNONFAMILY[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.MOAN?.Length; i++)
+                    {
+                        string Type = "MOAN";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.MOAN[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.MOANING?.Length; i++)
+                    {
+                        string Type = "MOANING";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.MOANING[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.MOANS?.Length; i++)
+                    {
+                        string Type = "MOANS";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.MOANS[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.MOUTH?.Length; i++)
+                    {
+                        string Type = "MOUTH";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.MOUTH[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.OPENING?.Length; i++)
+                    {
+                        string Type = "OPENING";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.OPENING[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.PAIN?.Length; i++)
+                    {
+                        string Type = "PAIN";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.PAIN[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.PENIS?.Length; i++)
+                    {
+                        string Type = "PENIS";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.PENIS[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.PROBE?.Length; i++)
+                    {
+                        string Type = "PROBE";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.PROBE[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.PUSSY?.Length; i++)
+                    {
+                        string Type = "PUSSY";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.PUSSY[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.QUIVERING?.Length; i++)
+                    {
+                        string Type = "QUIVERING";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.QUIVERING[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.RAPE?.Length; i++)
+                    {
+                        string Type = "RAPE";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.RAPE[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.RAPED?.Length; i++)
+                    {
+                        string Type = "RAPED";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.RAPED[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.SALTY?.Length; i++)
+                    {
+                        string Type = "SALTY";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.SALTY[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.SCREAM?.Length; i++)
+                    {
+                        string Type = "SCREAM";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.SCREAM[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.SCREAMS?.Length; i++)
+                    {
+                        string Type = "SCREAMS";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.SCREAMS[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.SCUM?.Length; i++)
+                    {
+                        string Type = "SCUM";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.SCUM[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.SLIME?.Length; i++)
+                    {
+                        string Type = "SLIME";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.SLIME[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.SLIMY?.Length; i++)
+                    {
+                        string Type = "SLIMY";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.SLIMY[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.SLOPPY?.Length; i++)
+                    {
+                        string Type = "SLOPPY";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.SLOPPY[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.SLOWLY?.Length; i++)
+                    {
+                        string Type = "SLOWLY";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.SLOWLY[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.SLUTTY?.Length; i++)
+                    {
+                        string Type = "SLUTTY";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.SLUTTY[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.SODOMIZE?.Length; i++)
+                    {
+                        string Type = "SODOMIZE";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.SODOMIZE[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.SODOMIZED?.Length; i++)
+                    {
+                        string Type = "SODOMIZED";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.SODOMIZED[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.SODOMIZES?.Length; i++)
+                    {
+                        string Type = "SODOMIZES";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.SODOMIZES[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.SODOMIZING?.Length; i++)
+                    {
+                        string Type = "SODOMIZING";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.SODOMIZING[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.SODOMY?.Length; i++)
+                    {
+                        string Type = "SODOMY";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.SODOMY[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.SOLID?.Length; i++)
+                    {
+                        string Type = "SOLID";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.SOLID[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.STRAPON?.Length; i++)
+                    {
+                        string Type = "STRAPON";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.STRAPON[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.SUBMISSIVE?.Length; i++)
+                    {
+                        string Type = "SUBMISSIVE";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.SUBMISSIVE[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.SUBMIT?.Length; i++)
+                    {
+                        string Type = "SUBMIT";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.SUBMIT[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.SWEARING?.Length; i++)
+                    {
+                        string Type = "SWEARING";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.SWEARING[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.TASTY?.Length; i++)
+                    {
+                        string Type = "TASTY";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.TASTY[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.THICK?.Length; i++)
+                    {
+                        string Type = "THICK";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.THICK[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.TIGHTNESS?.Length; i++)
+                    {
+                        string Type = "TIGHTNESS";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.TIGHTNESS[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.UNTHINKING?.Length; i++)
+                    {
+                        string Type = "UNTHINKING";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.UNTHINKING[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.VILE?.Length; i++)
+                    {
+                        string Type = "VILE";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.VILE[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.WET?.Length; i++)
+                    {
+                        string Type = "WET";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.WET[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    for (int i = 0; i < GetSynonyms.WHORE?.Length; i++)
+                    {
+                        string Type = "WHORE";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetSynonyms.WHORE[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                    GetJson = JsonSerializer.Serialize(GetSynonyms, new JsonSerializerOptions
+                    {
+                        WriteIndented = true
+                    });
+
+                    DataHelper.WriteFile(FilePath,Encoding.UTF8.GetBytes(GetJson));
+                    continue;
+                }
+                else
+                if (FileName == "WearAndTear_Descriptors.txt")
+                {
+                    //WearAndTearItem GetWearAndTear = JsonSerializer.Deserialize<WearAndTearItem>(Content);
+                }
+                else
+                if (FileName == "Arousal_Descriptors.txt")
+                {
+                    //ArousalItem GetArousal = JsonSerializer.Deserialize<ArousalItem>(Content);
+                }
+                else
+                {
+                    if (!Content.Contains("1st Person"))
+                    {
+                        continue;
+                    }
+                }
+
+                AproposItem GetApropos = JsonSerializer.Deserialize<AproposItem>(Content);
+
+                if (GetApropos == null)
+                {
+                    return;
+                }
+
+                if (GetApropos._1stPerson != null)
+                    for (int i = 0; i < GetApropos._1stPerson?.Length; i++)
+                    {
+                        string Type = "1stPerson";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetApropos._1stPerson[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                if (GetApropos._2ndPerson != null)
+                    for (int i = 0; i < GetApropos._2ndPerson?.Length; i++)
+                    {
+                        string Type = "2ndPerson";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetApropos._2ndPerson[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                if (GetApropos._3rdPerson != null)
+                    for (int i = 0; i < GetApropos._3rdPerson?.Length; i++)
+                    {
+                        string Type = "3rdPerson";
+                        string Key = FilePath + "-" + Type + "[" + i + "]";
+
+                        if (Translateds.ContainsKey(Key))
+                        {
+                            GetApropos._3rdPerson[i] = Translateds[Key].TransText;
+                        }
+                    }
+
+                GetJson = JsonSerializer.Serialize(GetApropos, new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+
+                DataHelper.WriteFile(FilePath, Encoding.UTF8.GetBytes(GetJson));
+                continue;
+            }
+
+          
         }
 
         public static int RecordCount = 0;
@@ -927,8 +1997,12 @@ namespace Apro2Trans
                 }
             }
 
-
             AproposItem GetApropos = JsonSerializer.Deserialize<AproposItem>(Content);
+
+            if (GetApropos == null)
+            {
+                return;
+            }
 
             if (GetApropos._1stPerson != null)
                 for (int i = 0; i < GetApropos._1stPerson?.Length; i++)
