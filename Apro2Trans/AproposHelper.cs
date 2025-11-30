@@ -1192,29 +1192,82 @@ namespace Apro2Trans
             }
         }
 
+        public static void Log(string Msg)
+        { 
+        
+        }
+
         public static int RecordCount = 0;
         public static void ReadAproposRecords(string FilePath, string FileName, string Content)
         {
             string Prompt = $@"
-You are a JSON fixer.
-I will give you a piece of malformed or broken JSON.
+You are a JSON fixer AI.
+
+I will give you a piece of JSON that may be malformed or broken.
 
 Your task:
 1. Automatically fix all syntax errors.
-2. Keep the original structure, field names, and content.
+2. Keep the original structure, field names, and content exactly as is.
 3. Only fix formatting; do not change any text content.
-4. Output only the final corrected JSON.
-5. Do NOT output explanations, comments, or any extra text.
+4. Output ONLY the corrected JSON.
+5. Do NOT add any Markdown, comments, explanations, or extra text.
+6. Do NOT wrap the JSON in ```json``` or any code blocks.
+7. Your response must be strictly valid JSON that can be parsed by a standard JSON parser.
 
 [Original JSON]
 {Content}
 
-Return ONLY the fixed JSON.
+Return only the fixed JSON.
 ";
 
             if (FileName == "Synonyms.txt")
             {
-                SynonymsItem? GetSynonyms = JsonSerializer.Deserialize<SynonymsItem>(Content);
+                SynonymsItem? GetSynonyms = null;
+                try 
+                {
+                    GetSynonyms = JsonSerializer.Deserialize<SynonymsItem>(Content);
+                } 
+                catch (Exception Ex)
+                {
+                    //Automatic JSON syntax correction
+                    //[Apropos2 DB Update] - The JSON has an incorrect format... 
+                    //Since we're already here, let's just use AI to fix it without thinking.
+                    TryAgain:
+                    LMStudio NLMStudio = new LMStudio();
+
+                    string? RecvMsg = "";
+
+                    NLMStudio.CallAI(Prompt, ref RecvMsg);
+
+                    if (RecvMsg != null)
+                    {
+                        string? GetAIResult = ExtractContent(RecvMsg);
+                        if (GetAIResult != null)
+                        {
+                            //Input the AI-repaired JSON
+                            //If you're wrong, just go to.
+                            try
+                            {
+                                GetSynonyms = JsonSerializer.Deserialize<SynonymsItem>(GetAIResult);
+
+                                //Write the repaired JSON
+                                var GetJson = JsonSerializer.Serialize(GetSynonyms, new JsonSerializerOptions
+                                {
+                                    WriteIndented = true
+                                });
+
+                                DataHelper.WriteFile(FilePath, Encoding.UTF8.GetBytes(GetJson));
+
+                                Log("Automatically fix JSON syntax errors - " + FilePath);
+                            }
+                            catch
+                            {
+                                Thread.Sleep(100);
+                                goto TryAgain;
+                            }
+                        }
+                    }
+                }
 
                 if (GetSynonyms == null)
                 {
@@ -2013,7 +2066,7 @@ Return ONLY the fixed JSON.
             else
             if (FileName == "WearAndTear_Descriptors.txt")
             {
-                WearAndTearItem GetWearAndTear = JsonSerializer.Deserialize<WearAndTearItem>(Content);
+                //WearAndTearItem GetWearAndTear = JsonSerializer.Deserialize<WearAndTearItem>(Content);
 
                 //string GetJson = JsonSerializer.Serialize(GetWearAndTear, new JsonSerializerOptions
                 //{
@@ -2025,7 +2078,7 @@ Return ONLY the fixed JSON.
             else
             if (FileName == "Arousal_Descriptors.txt")
             {
-                ArousalItem GetArousal = JsonSerializer.Deserialize<ArousalItem>(Content);
+                //ArousalItem GetArousal = JsonSerializer.Deserialize<ArousalItem>(Content);
 
                 //Process
 
@@ -2052,16 +2105,17 @@ Return ONLY the fixed JSON.
             }
             catch(Exception Ex) 
             {
+                //Automatic JSON syntax correction
                 //[Apropos2 DB Update] - The JSON has an incorrect format... 
                 //Since we're already here, let's just use AI to fix it without thinking.
                 TryAgain:
                 LMStudio NLMStudio = new LMStudio();
-                string MsgRecv = "";
-                NLMStudio.CallAI(Prompt, ref MsgRecv);
+                string? RecvMsg = "";
+                NLMStudio.CallAI(Prompt, ref RecvMsg);
 
-                if (MsgRecv.Length > 0)
+                if (RecvMsg != null)
                 {
-                    string? GetAIResult = ExtractContent(MsgRecv);
+                    string? GetAIResult = ExtractContent(RecvMsg);
                     if (GetAIResult != null)
                     {
                         //Input the AI-repaired JSON
@@ -2069,8 +2123,18 @@ Return ONLY the fixed JSON.
                         try 
                         {
                             GetApropos = JsonSerializer.Deserialize<AproposItem>(GetAIResult);
+
+                            //Write the repaired JSON
+                            var GetJson = JsonSerializer.Serialize(GetApropos, new JsonSerializerOptions
+                            {
+                                WriteIndented = true
+                            });
+
+                            DataHelper.WriteFile(FilePath, Encoding.UTF8.GetBytes(GetJson));
+
+                            Log("Automatically fix JSON syntax errors - " + FilePath);
                         }
-                        catch 
+                        catch(Exception E) 
                         {
                             Thread.Sleep(100);
                             goto TryAgain;
