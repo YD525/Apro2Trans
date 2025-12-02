@@ -7,6 +7,7 @@ using PhoenixEngine.DelegateManagement;
 using System.Windows;
 using PhoenixEngine.TranslateManage;
 using static PhoenixEngine.EngineManagement.DataTransmission;
+using Cohere;
 
 namespace Apro2Trans
 {
@@ -75,8 +76,24 @@ namespace Apro2Trans
             });
         }
 
-        public static bool TranslationUnitStartWorkCall(TranslationUnit Item)
+        public static bool TranslationUnitStartWorkCall(TranslationUnit Item,int State)
         {
+            if (State == 2)
+            {
+                //Quality inspection of the translated content
+                int A = Item.SourceText?.Count(L => L == '$') ?? 0;
+                int B = Item.TransText?.Count(L => L == '$') ?? 0;
+
+                if (A != B)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+
             return true;
         }
 

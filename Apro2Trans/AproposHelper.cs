@@ -14,6 +14,7 @@ using System.Windows.Interop;
 using System.Collections;
 using PhoenixEngine.PlatformManagement.LocalAI;
 using System.Runtime.CompilerServices;
+using PhoenixEngine.DelegateManagement;
 
 namespace Apro2Trans
 {
@@ -22,8 +23,8 @@ namespace Apro2Trans
         public static Thread? UISyncTrd = null;
         public static Thread? TranslationSyncTrd = null;
 
-        public static Dictionary<string,TranslationUnit> Translateds = new Dictionary<string,TranslationUnit>();
-      
+        public static Dictionary<string, TranslationUnit> Translateds = new Dictionary<string, TranslationUnit>();
+
 
         public static bool StartUISyncState = false;
         public static void StartUISyncService(bool Check)
@@ -39,9 +40,9 @@ namespace Apro2Trans
                         while (StartUISyncState)
                         {
                             Thread.Sleep(1000);
-                            DeFine.WorkWin.Dispatcher.Invoke(new Action(() => 
+                            DeFine.WorkWin.Dispatcher.Invoke(new Action(() =>
                             {
-                                DeFine.WorkWin.ThreadInFo.Content = string.Format("(Current:{0},Max:{1})", Engine.GetThreadCount(),EngineConfig.MaxThreadCount);
+                                DeFine.WorkWin.ThreadInFo.Content = string.Format("(Current:{0},Max:{1})", Engine.GetThreadCount(), EngineConfig.MaxThreadCount);
                                 DeFine.WorkWin.Progress.Content = string.Format("({0}/{1})", Translateds.Count, Total);
                                 if (Working)
                                 {
@@ -79,22 +80,29 @@ namespace Apro2Trans
                         {
                             bool IsEnd = false;
 
-                            var GetUnit = Engine.DequeueTranslated(ref IsEnd);
-                            if (GetUnit != null)
+                            try
                             {
-                                if (!Translateds.ContainsKey(GetUnit.Key))
+                                var GetUnit = Engine.DequeueTranslated(ref IsEnd);
+                                if (GetUnit != null)
                                 {
-                                    GetUnit.TransText = Engine.AppendDollarWrappedReplacements(GetUnit.TransText);
-                                    Translateds.Add(GetUnit.Key, GetUnit);
+                                    if (!Translateds.ContainsKey(GetUnit.Key))
+                                    {
+                                        GetUnit.TransText = Engine.AppendDollarWrappedReplacements(GetUnit.TransText);
+                                        Translateds.Add(GetUnit.Key, GetUnit);
+                                    }
+                                    else
+                                    {
+
+                                    }
                                 }
                                 else
                                 {
-
+                                    Thread.Sleep(500);
                                 }
                             }
-                            else
+                            catch
                             {
-                                Thread.Sleep(500);
+                            
                             }
 
                             if (IsEnd)
@@ -132,7 +140,7 @@ namespace Apro2Trans
             LastReadFilePath = FilePath;
             Engine.InitTranslationCore(Engine.From, Engine.To);
 
-            new Thread(() => 
+            new Thread(() =>
             {
                 Thread.Sleep(100);
 
@@ -155,10 +163,13 @@ namespace Apro2Trans
                 Engine.SkipWordAnalysis(true);
                 Log("Disable word analysis");
                 Engine.Start();
+
                 StartTranslationSyncService(true);
 
             }).Start();
-        } 
+        }
+
+
         public static void Close()
         {
             Engine.End();
@@ -174,7 +185,7 @@ namespace Apro2Trans
             {
                 using (JsonDocument Doc = JsonDocument.Parse(AiResponseJson))
                 {
-                    
+
                     JsonElement Choices = Doc.RootElement.GetProperty("choices");
                     if (Choices.GetArrayLength() > 0)
                     {
@@ -187,7 +198,7 @@ namespace Apro2Trans
             }
             catch (JsonException ex)
             {
-                
+
             }
 
             return null;
@@ -1180,7 +1191,7 @@ namespace Apro2Trans
                         WriteIndented = true
                     });
 
-                    DataHelper.WriteFile(FilePath,Encoding.UTF8.GetBytes(GetJson));
+                    DataHelper.WriteFile(FilePath, Encoding.UTF8.GetBytes(GetJson));
                     continue;
                 }
                 else
@@ -1285,16 +1296,16 @@ Return only the fixed JSON.
             if (FileName == "Synonyms.txt")
             {
                 SynonymsItem? GetSynonyms = null;
-                try 
+                try
                 {
                     GetSynonyms = JsonSerializer.Deserialize<SynonymsItem>(Content);
-                } 
+                }
                 catch (Exception Ex)
                 {
-                    //Automatic JSON syntax correction
-                    //[Apropos2 DB Update] - The JSON has an incorrect format... 
-                    //Since we're already here, let's just use AI to fix it without thinking.
-                    TryAgain:
+                //Automatic JSON syntax correction
+                //[Apropos2 DB Update] - The JSON has an incorrect format... 
+                //Since we're already here, let's just use AI to fix it without thinking.
+                TryAgain:
                     LMStudio NLMStudio = new LMStudio();
 
                     string? RecvMsg = "";
@@ -1340,7 +1351,7 @@ Return only the fixed JSON.
                 {
                     string GetOriginal = GetSynonyms.ACCEPT[i];
                     string Type = "ACCEPT";
-                    string Key = FilePath + "-" + Type +"[" + i + "]";
+                    string Key = FilePath + "-" + Type + "[" + i + "]";
 
                     RecordCount = TranslateApi.Enqueue(FileName, Key, Type, GetOriginal, string.Empty);
                 }
@@ -2122,7 +2133,7 @@ Return only the fixed JSON.
                 //{
                 //    WriteIndented = true
                 //});
-                
+
                 //return GetJson;
             }
             else
@@ -2159,18 +2170,18 @@ Return only the fixed JSON.
                 }
             }
 
-            AproposItem ?GetApropos = null;
+            AproposItem? GetApropos = null;
 
-            try 
-            { 
+            try
+            {
                 GetApropos = JsonSerializer.Deserialize<AproposItem>(Content);
             }
-            catch(Exception Ex) 
+            catch (Exception Ex)
             {
-                //Automatic JSON syntax correction
-                //[Apropos2 DB Update] - The JSON has an incorrect format... 
-                //Since we're already here, let's just use AI to fix it without thinking.
-                TryAgain:
+            //Automatic JSON syntax correction
+            //[Apropos2 DB Update] - The JSON has an incorrect format... 
+            //Since we're already here, let's just use AI to fix it without thinking.
+            TryAgain:
                 LMStudio NLMStudio = new LMStudio();
                 string? RecvMsg = "";
                 NLMStudio.CallAI(Prompt, ref RecvMsg);
@@ -2182,7 +2193,7 @@ Return only the fixed JSON.
                     {
                         //Input the AI-repaired JSON
                         //If you're wrong, just go to.
-                        try 
+                        try
                         {
                             GetApropos = JsonSerializer.Deserialize<AproposItem>(GetAIResult);
 
@@ -2196,7 +2207,7 @@ Return only the fixed JSON.
 
                             Log("Automatically fix JSON syntax errors - " + FilePath);
                         }
-                        catch(Exception E) 
+                        catch (Exception E)
                         {
                             Thread.Sleep(100);
                             goto TryAgain;
