@@ -8,6 +8,7 @@ using System.Windows;
 using PhoenixEngine.TranslateManage;
 using static PhoenixEngine.EngineManagement.DataTransmission;
 using Cohere;
+using PhoenixEngine.EngineManagement;
 
 namespace Apro2Trans
 {
@@ -33,7 +34,7 @@ namespace Apro2Trans
         public static void Init()
         {
             DelegateHelper.SetDataCall += Recv;
-            DelegateHelper.SetTranslationUnitCallBack += TranslationUnitStartWorkCall;
+            DelegateHelper.SetTranslationUnitCallBack += TranslationUnitEndWorkCall;
 
             RegListener("InputOutputLog", new List<int>() { 3, 5 }, new Action<int, object>((Sign, Any) =>
             {
@@ -76,7 +77,7 @@ namespace Apro2Trans
             });
         }
 
-        public static bool TranslationUnitStartWorkCall(TranslationUnit Item,int State)
+        public static bool TranslationUnitEndWorkCall(TranslationUnit Item,int State)
         {
             if (State == 2)
             {
@@ -86,6 +87,8 @@ namespace Apro2Trans
 
                 if (A != B)
                 {
+                    Item.TransText = string.Empty;
+                    Engine.AddTranslationUnit(Item);
                     return false;
                 }
                 else
