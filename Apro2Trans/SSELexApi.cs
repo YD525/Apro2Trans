@@ -97,12 +97,17 @@ namespace Apro2Trans
         public static List<string> ErrorKeys = new List<string>();
         public static bool TranslationUnitEndWorkCall(TranslationUnit Item, int State)
         {
-            Item.AIParam =
-  "[Strict Translation Instruction]\r\n" +
-  "IMPORTANT: The translation will be directly shown in the game JSON.\r\n" +
-  "Only output the pure translated text.\r\n" +
-  "Do NOT add any extra characters, explanations, labels, context, control characters, or emoji.\r\n" +
-  "Strictly follow the placeholder format $$Word$$.\r\n\r\n";
+            string Action =
+   "[Strict Translation Instruction]\r\n" +
+   "IMPORTANT: The translation will be directly shown in the game JSON.\r\n" +
+   "Only output the pure translated text.\r\n" +
+   "Do NOT add any extra characters, explanations, labels, context, control characters, or emoji.\r\n" +
+   "Strictly follow the placeholder format $$Word$$.\r\n\r\n";
+
+            if (Item.AIParam.Length == 0)
+            {
+                Item.AIParam = Action;
+            }
 
             if (State == 2)
             {
@@ -131,14 +136,14 @@ namespace Apro2Trans
                     }
 
                     //Dynamically modify prompt words
-                    Item.AIParam +=
+                    Item.AIParam = Action +
                     "[Translation Error Report]\r\n" +
                     $"Translation error: The \"$\" placeholder symbols were handled incorrectly.\r\n" +
                     "All \"$\" characters must be preserved without any modification.\r\n" +
                     "Please strictly follow the placeholder format $$Word$$ and do NOT translate or modify it.\r\n" +
                      AutoStr +
                     $"Source: {Item.SourceText}\r\n" +
-                    $"Invalid Translation: {Item.TransText}";
+                    $"Invalid Translation: {Item.TransText}\r\n";
                     return false;
                 }
                 else
