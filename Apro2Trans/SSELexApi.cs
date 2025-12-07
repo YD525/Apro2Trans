@@ -94,6 +94,7 @@ namespace Apro2Trans
             DelegateHelper.SetTranslationUnitCallBack += TranslationUnitEndWorkCall;
         }
 
+        public static List<string> ErrorKeys = new List<string>();
         public static bool TranslationUnitEndWorkCall(TranslationUnit Item, int State)
         {
             if (State == 2)
@@ -104,13 +105,31 @@ namespace Apro2Trans
 
                 if (A != B)
                 {
+                    int ErrorCount = 0;
+
+                    if (ErrorKeys.Contains(Item.Key))
+                    {
+                        ErrorCount++;
+                    }
+                    else
+                    {
+                        ErrorKeys.Add(Item.Key);
+                    }
+
+                    string AutoStr = "";
+
+                    if (ErrorCount > 0)
+                    {
+                        AutoStr = "Repeat: do NOT translate or alter anything inside the $$Word$$ placeholders.\r\n";
+                    }
+
                     //Dynamically modify prompt words
                     Item.AIParam =
                     "[Translation Error Report]\r\n" +
                     $"Translation error: The \"$\" placeholder symbols were handled incorrectly.\r\n" +
                     "All \"$\" characters must be preserved without any modification.\r\n" +
                     "Please strictly follow the placeholder format $$Word$$ and do NOT translate or modify it.\r\n" +
-                    "Repeat: do NOT translate or alter anything inside the $$Word$$ placeholders.\r\n" +
+                     AutoStr +
                     $"Source: {Item.SourceText}\r\n" +
                     $"Invalid Translation: {Item.TransText}";
                     return false;
@@ -128,7 +147,7 @@ namespace Apro2Trans
         {
             return Engine.DequeueTranslated(ref IsEnd);
         }
-       
+
         public int Enqueue(string FileName, string Key, string Type, string Original, string AIParam)
         {
             TranslationUnit Unit = new TranslationUnit(
