@@ -102,7 +102,8 @@ namespace Apro2Trans
    "IMPORTANT: The translation will be directly shown in the game JSON.\r\n" +
    "Only output the pure translated text.\r\n" +
    "Do NOT add any extra characters, explanations, labels, context, control characters, or emoji.\r\n" +
-   "Strictly follow the placeholder format $$Word$$.\r\n\r\n";
+   "Strictly follow the placeholder format $$Word$$.\r\n"+ "[Role]\r\n"
+   + "You are an AI translator for erotic games.\r\n";
 
             if (Item.AIParam.Length == 0)
             {
