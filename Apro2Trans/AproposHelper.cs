@@ -62,6 +62,43 @@ namespace Apro2Trans
             }
         }
 
+        public static bool IsValidJsonString(string? Text)
+        {
+            if (Text == null)
+                return true;
+
+            try
+            {
+                JsonEncodedText.Encode(Text);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public static int CleanInvalidJsonTexts()
+        {
+            var Removes = new List<string>();
+
+            foreach (var Translated in Translateds)
+            {
+                var Unit = Translated.Value;
+                if (!IsValidJsonString(Unit.TransText))
+                {
+                    Removes.Add(Translated.Key);
+                }
+            }
+
+            foreach (var Key in Removes)
+            {
+                Translateds.Remove(Key);
+            }
+
+            return Removes.Count;
+        }
+
+
         public static bool Working = false;
 
         public static bool StartTranslationSyncState = false;
@@ -108,6 +145,13 @@ namespace Apro2Trans
 
                             if (IsEnd)
                             {
+                                Log("Quality testing is underway.");
+
+                                if (CleanInvalidJsonTexts() > 0)
+                                {
+                                    Log("Remove fields that might affect the JSON structure.");
+                                }
+
                                 Working = false;
                                 StartTranslationSyncState = false;
 
