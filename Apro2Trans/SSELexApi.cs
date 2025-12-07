@@ -97,6 +97,13 @@ namespace Apro2Trans
         public static List<string> ErrorKeys = new List<string>();
         public static bool TranslationUnitEndWorkCall(TranslationUnit Item, int State)
         {
+            Item.AIParam =
+  "[Strict Translation Instruction]\r\n" +
+  "IMPORTANT: The translation will be directly shown in the game JSON.\r\n" +
+  "Only output the pure translated text.\r\n" +
+  "Do NOT add any extra characters, explanations, labels, context, control characters, or emoji.\r\n" +
+  "Strictly follow the placeholder format $$Word$$.\r\n\r\n";
+
             if (State == 2)
             {
                 //Quality inspection of the translated content
@@ -124,7 +131,7 @@ namespace Apro2Trans
                     }
 
                     //Dynamically modify prompt words
-                    Item.AIParam =
+                    Item.AIParam +=
                     "[Translation Error Report]\r\n" +
                     $"Translation error: The \"$\" placeholder symbols were handled incorrectly.\r\n" +
                     "All \"$\" characters must be preserved without any modification.\r\n" +
