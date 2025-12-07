@@ -151,6 +151,8 @@ namespace Apro2Trans
 
                 var GetFiles = DataHelper.GetAllFile(FilePath, new List<string>() { Suffix });
 
+                Log(GetFiles.Count + " files have been read,Please wait........");
+
                 foreach (var Get in GetFiles)
                 {
                     string GetContent = DataHelper.ReadFileByStr(Get.FilePath, Encoding.UTF8);
