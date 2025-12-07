@@ -4,6 +4,8 @@
 
 Apro2Trans is a translation tool specifically designed for the **Apropos 2 mod**. It uses a local AI model (LMStudio) to automatically translate mod text content, making it easier for users to enjoy content that is originally available only in certain languages.
 
+Supports translation between English, Japanese, German, Korean, Turkish, Brazilian, Italian, Spanish, Hindi, Urdu, Indonesian, French, Vietnamese, Polish, Canadian French, Portuguese,Ukrainian,Russian,Traditional Chinese,Simplified Chinese
+
 ![Preview](Pic.png)
 
 ## 🧩 Third-Party Frameworks
