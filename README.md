@@ -6,6 +6,18 @@ Apro2Trans is a translation tool specifically designed for the **Apropos 2 mod**
 
 ![Preview](Pic.png)
 
+## 🧩 Third-Party Frameworks
+
+This project uses the following third-party frameworks and packages:
+
+- **Cohere**  
+  Required package to call the CohereAI API for natural language processing tasks.
+
+- **System.Data.SQLite**  
+  Dependency package for SQLite database operations.
+
+---
+
 ## Usage Guide
 
 Usage: Enter the path to be translated in DBPath.  
