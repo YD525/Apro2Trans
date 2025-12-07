@@ -15,6 +15,7 @@ using System.Collections;
 using PhoenixEngine.PlatformManagement.LocalAI;
 using System.Runtime.CompilerServices;
 using PhoenixEngine.DelegateManagement;
+using System.Text.RegularExpressions;
 
 namespace Apro2Trans
 {
@@ -206,6 +207,14 @@ namespace Apro2Trans
             return null;
         }
 
+        public static string ReplaceDoubleDollarToBraces(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            return Regex.Replace(input, @"\$\$(.*?)\$\$", "{$1}");
+        }
+
         public static void WriteDB()
         {
             if (!Directory.Exists(LastReadFilePath) || LastReadFilePath.Trim().Length == 0)
@@ -239,7 +248,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.ACCEPT[i] = Translateds[Key].TransText;
+                            GetSynonyms.ACCEPT[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -250,7 +259,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.ACCEPTING[i] = Translateds[Key].TransText;
+                            GetSynonyms.ACCEPTING[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -261,7 +270,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.ACCEPTS[i] = Translateds[Key].TransText;
+                            GetSynonyms.ACCEPTS[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -272,7 +281,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.ASS[i] = Translateds[Key].TransText;
+                            GetSynonyms.ASS[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -283,7 +292,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.BEAST[i] = Translateds[Key].TransText;
+                            GetSynonyms.BEAST[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -294,7 +303,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.BEASTCOCK[i] = Translateds[Key].TransText;
+                            GetSynonyms.BEASTCOCK[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -305,7 +314,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.BITCH[i] = Translateds[Key].TransText;
+                            GetSynonyms.BITCH[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
                     for (int i = 0; i < GetSynonyms.BOOBS?.Length; i++)
@@ -315,7 +324,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.BOOBS[i] = Translateds[Key].TransText;
+                            GetSynonyms.BOOBS[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -326,7 +335,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.BREED[i] = Translateds[Key].TransText;
+                            GetSynonyms.BREED[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -337,7 +346,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.BUG[i] = Translateds[Key].TransText;
+                            GetSynonyms.BUG[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -348,7 +357,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.BUGCOCK[i] = Translateds[Key].TransText;
+                            GetSynonyms.BUGCOCK[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -359,7 +368,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.BUTTOCKS[i] = Translateds[Key].TransText;
+                            GetSynonyms.BUTTOCKS[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -370,7 +379,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.COCK[i] = Translateds[Key].TransText;
+                            GetSynonyms.COCK[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -381,7 +390,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.CREAM[i] = Translateds[Key].TransText;
+                            GetSynonyms.CREAM[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -392,7 +401,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.CUM[i] = Translateds[Key].TransText;
+                            GetSynonyms.CUM[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -403,7 +412,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.CUMMING[i] = Translateds[Key].TransText;
+                            GetSynonyms.CUMMING[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -414,7 +423,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.CUMS[i] = Translateds[Key].TransText;
+                            GetSynonyms.CUMS[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -425,7 +434,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.DEAD[i] = Translateds[Key].TransText;
+                            GetSynonyms.DEAD[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -436,7 +445,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.EXPLORE[i] = Translateds[Key].TransText;
+                            GetSynonyms.EXPLORE[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -447,7 +456,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.EXPOSE[i] = Translateds[Key].TransText;
+                            GetSynonyms.EXPOSE[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -458,7 +467,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.FEAR[i] = Translateds[Key].TransText;
+                            GetSynonyms.FEAR[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -469,7 +478,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.FFAMILY[i] = Translateds[Key].TransText;
+                            GetSynonyms.FFAMILY[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -480,7 +489,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.FOREIGN[i] = Translateds[Key].TransText;
+                            GetSynonyms.FOREIGN[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -491,7 +500,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.FUCK[i] = Translateds[Key].TransText;
+                            GetSynonyms.FUCK[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -502,7 +511,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.FUCKED[i] = Translateds[Key].TransText;
+                            GetSynonyms.FUCKED[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -513,7 +522,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.FUCKING[i] = Translateds[Key].TransText;
+                            GetSynonyms.FUCKING[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -524,7 +533,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.FUCKS[i] = Translateds[Key].TransText;
+                            GetSynonyms.FUCKS[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -535,7 +544,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.GENWT[i] = Translateds[Key].TransText;
+                            GetSynonyms.GENWT[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -546,7 +555,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.GIRTH[i] = Translateds[Key].TransText;
+                            GetSynonyms.GIRTH[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -557,7 +566,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.HEAVING[i] = Translateds[Key].TransText;
+                            GetSynonyms.HEAVING[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -568,7 +577,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.HOLE[i] = Translateds[Key].TransText;
+                            GetSynonyms.HOLE[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -579,7 +588,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.HOLES[i] = Translateds[Key].TransText;
+                            GetSynonyms.HOLES[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -590,7 +599,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.HORNY[i] = Translateds[Key].TransText;
+                            GetSynonyms.HORNY[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -601,7 +610,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.HUGE[i] = Translateds[Key].TransText;
+                            GetSynonyms.HUGE[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -612,7 +621,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.HUGELOAD[i] = Translateds[Key].TransText;
+                            GetSynonyms.HUGELOAD[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -623,7 +632,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.INSERT[i] = Translateds[Key].TransText;
+                            GetSynonyms.INSERT[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -634,7 +643,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.INSERTED[i] = Translateds[Key].TransText;
+                            GetSynonyms.INSERTED[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -645,7 +654,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.INSERTING[i] = Translateds[Key].TransText;
+                            GetSynonyms.INSERTING[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -656,7 +665,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.INSERTS[i] = Translateds[Key].TransText;
+                            GetSynonyms.INSERTS[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -667,7 +676,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.JIGGLE[i] = Translateds[Key].TransText;
+                            GetSynonyms.JIGGLE[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -678,7 +687,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.JUICY[i] = Translateds[Key].TransText;
+                            GetSynonyms.JUICY[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -689,7 +698,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.LARGELOAD[i] = Translateds[Key].TransText;
+                            GetSynonyms.LARGELOAD[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -700,7 +709,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.LOUDLY[i] = Translateds[Key].TransText;
+                            GetSynonyms.LOUDLY[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -711,7 +720,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.MACHINE[i] = Translateds[Key].TransText;
+                            GetSynonyms.MACHINE[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -722,7 +731,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.MACHINESLIME[i] = Translateds[Key].TransText;
+                            GetSynonyms.MACHINESLIME[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -733,7 +742,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.MACHINESLIMY[i] = Translateds[Key].TransText;
+                            GetSynonyms.MACHINESLIMY[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -744,7 +753,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.METAL[i] = Translateds[Key].TransText;
+                            GetSynonyms.METAL[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -755,7 +764,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.MFAMILY[i] = Translateds[Key].TransText;
+                            GetSynonyms.MFAMILY[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -766,7 +775,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.MNONFAMILY[i] = Translateds[Key].TransText;
+                            GetSynonyms.MNONFAMILY[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -777,7 +786,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.MOAN[i] = Translateds[Key].TransText;
+                            GetSynonyms.MOAN[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -788,7 +797,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.MOANING[i] = Translateds[Key].TransText;
+                            GetSynonyms.MOANING[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -799,7 +808,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.MOANS[i] = Translateds[Key].TransText;
+                            GetSynonyms.MOANS[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -810,7 +819,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.MOUTH[i] = Translateds[Key].TransText;
+                            GetSynonyms.MOUTH[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -821,7 +830,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.OPENING[i] = Translateds[Key].TransText;
+                            GetSynonyms.OPENING[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -832,7 +841,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.PAIN[i] = Translateds[Key].TransText;
+                            GetSynonyms.PAIN[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -843,7 +852,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.PENIS[i] = Translateds[Key].TransText;
+                            GetSynonyms.PENIS[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -854,7 +863,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.PROBE[i] = Translateds[Key].TransText;
+                            GetSynonyms.PROBE[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -865,7 +874,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.PUSSY[i] = Translateds[Key].TransText;
+                            GetSynonyms.PUSSY[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -876,7 +885,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.QUIVERING[i] = Translateds[Key].TransText;
+                            GetSynonyms.QUIVERING[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -887,7 +896,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.RAPE[i] = Translateds[Key].TransText;
+                            GetSynonyms.RAPE[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -898,7 +907,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.RAPED[i] = Translateds[Key].TransText;
+                            GetSynonyms.RAPED[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -909,7 +918,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.SALTY[i] = Translateds[Key].TransText;
+                            GetSynonyms.SALTY[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -920,7 +929,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.SCREAM[i] = Translateds[Key].TransText;
+                            GetSynonyms.SCREAM[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -931,7 +940,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.SCREAMS[i] = Translateds[Key].TransText;
+                            GetSynonyms.SCREAMS[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -942,7 +951,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.SCUM[i] = Translateds[Key].TransText;
+                            GetSynonyms.SCUM[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -953,7 +962,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.SLIME[i] = Translateds[Key].TransText;
+                            GetSynonyms.SLIME[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -964,7 +973,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.SLIMY[i] = Translateds[Key].TransText;
+                            GetSynonyms.SLIMY[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -975,7 +984,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.SLOPPY[i] = Translateds[Key].TransText;
+                            GetSynonyms.SLOPPY[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -986,7 +995,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.SLOWLY[i] = Translateds[Key].TransText;
+                            GetSynonyms.SLOWLY[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -997,7 +1006,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.SLUTTY[i] = Translateds[Key].TransText;
+                            GetSynonyms.SLUTTY[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1008,7 +1017,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.SODOMIZE[i] = Translateds[Key].TransText;
+                            GetSynonyms.SODOMIZE[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1019,7 +1028,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.SODOMIZED[i] = Translateds[Key].TransText;
+                            GetSynonyms.SODOMIZED[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1030,7 +1039,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.SODOMIZES[i] = Translateds[Key].TransText;
+                            GetSynonyms.SODOMIZES[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1041,7 +1050,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.SODOMIZING[i] = Translateds[Key].TransText;
+                            GetSynonyms.SODOMIZING[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1052,7 +1061,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.SODOMY[i] = Translateds[Key].TransText;
+                            GetSynonyms.SODOMY[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1063,7 +1072,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.SOLID[i] = Translateds[Key].TransText;
+                            GetSynonyms.SOLID[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1074,7 +1083,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.STRAPON[i] = Translateds[Key].TransText;
+                            GetSynonyms.STRAPON[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1085,7 +1094,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.SUBMISSIVE[i] = Translateds[Key].TransText;
+                            GetSynonyms.SUBMISSIVE[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1096,7 +1105,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.SUBMIT[i] = Translateds[Key].TransText;
+                            GetSynonyms.SUBMIT[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1107,7 +1116,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.SWEARING[i] = Translateds[Key].TransText;
+                            GetSynonyms.SWEARING[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1118,7 +1127,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.TASTY[i] = Translateds[Key].TransText;
+                            GetSynonyms.TASTY[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1129,7 +1138,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.THICK[i] = Translateds[Key].TransText;
+                            GetSynonyms.THICK[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1140,7 +1149,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.TIGHTNESS[i] = Translateds[Key].TransText;
+                            GetSynonyms.TIGHTNESS[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1151,7 +1160,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.UNTHINKING[i] = Translateds[Key].TransText;
+                            GetSynonyms.UNTHINKING[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1162,7 +1171,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.VILE[i] = Translateds[Key].TransText;
+                            GetSynonyms.VILE[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1173,7 +1182,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.WET[i] = Translateds[Key].TransText;
+                            GetSynonyms.WET[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1184,7 +1193,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetSynonyms.WHORE[i] = Translateds[Key].TransText;
+                            GetSynonyms.WHORE[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1230,7 +1239,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetApropos._1stPerson[i] = Translateds[Key].TransText;
+                            GetApropos._1stPerson[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1242,7 +1251,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetApropos._2ndPerson[i] = Translateds[Key].TransText;
+                            GetApropos._2ndPerson[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
@@ -1254,7 +1263,7 @@ namespace Apro2Trans
 
                         if (Translateds.ContainsKey(Key))
                         {
-                            GetApropos._3rdPerson[i] = Translateds[Key].TransText;
+                            GetApropos._3rdPerson[i] = ReplaceDoubleDollarToBraces(Translateds[Key].TransText);
                         }
                     }
 
