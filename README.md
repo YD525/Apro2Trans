@@ -20,6 +20,14 @@ This project uses the following third-party frameworks and packages:
 
 ---
 
+## Translation Core
+
+PhoenixEngine.dll
+
+https://github.com/YD525/PhoenixEngine
+
+You can pull the latest source code from here, compile it, and then reference it in the assembly.
+
 ## Usage Guide
 
 Download LMStudio, install the runtime library, and install the model. Mistral Nemo Instruction 2407 is recommended (other models may censor certain words). Select "Developer" in the left navigation of LMStudio to enter the interface, and load the model you want to use. This is used to translate Apropos 2 JSON files.
