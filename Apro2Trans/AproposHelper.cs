@@ -1188,6 +1188,7 @@ namespace Apro2Trans
 
                     GetJson = JsonSerializer.Serialize(GetSynonyms, new JsonSerializerOptions
                     {
+                        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                         WriteIndented = true
                     });
 
@@ -1257,6 +1258,7 @@ namespace Apro2Trans
 
                 GetJson = JsonSerializer.Serialize(GetApropos, new JsonSerializerOptions
                 {
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                     WriteIndented = true
                 });
 
@@ -1326,6 +1328,7 @@ Return only the fixed JSON.
                                 //Write the repaired JSON
                                 var GetJson = JsonSerializer.Serialize(GetSynonyms, new JsonSerializerOptions
                                 {
+                                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                                     WriteIndented = true
                                 });
 
@@ -2200,6 +2203,7 @@ Return only the fixed JSON.
                             //Write the repaired JSON
                             var GetJson = JsonSerializer.Serialize(GetApropos, new JsonSerializerOptions
                             {
+                                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                                 WriteIndented = true
                             });
 
