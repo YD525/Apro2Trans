@@ -87,8 +87,6 @@ namespace Apro2Trans
 
                 if (A != B)
                 {
-                    Item.TransText = string.Empty;
-                    Engine.AddTranslationUnit(Item);
                     return false;
                 }
                 else

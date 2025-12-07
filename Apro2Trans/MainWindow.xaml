@@ -78,6 +78,12 @@
 
             <Label Name="State">
             </Label>
+
+            <Label Foreground="#FF1135FF">
+               Engine Ver
+            </Label>
+            <Label Name="EngineVersion">
+            </Label>
         </StackPanel>
 
         <Grid Grid.Row="2">

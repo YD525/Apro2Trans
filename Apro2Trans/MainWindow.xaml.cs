@@ -60,6 +60,8 @@ namespace Apro2Trans
                 From.Items.Add(GetLang.ToString());
                 To.Items.Add(GetLang.ToString());
             }
+
+            EngineVersion.Content = Engine.Version;
         }
 
         private void StartTrans(object sender, RoutedEventArgs e)
