@@ -20,6 +20,8 @@ This project uses the following third-party frameworks and packages:
 
 ## Usage Guide
 
+Download LMStudio, install the runtime library, and install the model. Mistral Nemo Instruction 2407 is recommended (other models may censor certain words). Select "Developer" in the left navigation of LMStudio to enter the interface, and load the model you want to use. This is used to translate Apropos 2 JSON files.
+
 Usage: Enter the path to be translated in DBPath.  
 Example:  
 C:\Users\52508\Downloads\DB\Apropos2.1.0.0.10 - DB ONLY - NO INCEST\Apropos2
