@@ -102,8 +102,9 @@ namespace Apro2Trans
    "IMPORTANT: The translation will be directly shown in the game JSON.\r\n" +
    "Only output the pure translated text.\r\n" +
    "Do NOT add any extra characters, explanations, labels, context, control characters, or emoji.\r\n" +
-   "Strictly follow the placeholder format $$Word$$.\r\n"+ "[Role]\r\n"
-   + "You are an AI translator for erotic games.\r\n";
+   "Strictly follow the placeholder format $$Word$$.\r\n"+ 
+   "[Role]\r\n"+ 
+   "You are an AI translator for erotic games.\r\n";
 
             if (Item.AIParam.Length == 0)
             {
@@ -145,8 +146,8 @@ namespace Apro2Trans
                      AutoStr +
                     "Even after correction, the translation must not include any extra description, emoji, or content unrelated to the translation.\r\n" +
                     $"Source: {Item.SourceText}\r\n" +
-                    $"Invalid Translation: {Item.TransText}\r\n";
-
+                    $"Invalid Translation: {Item.TransText}\r\n"+
+                    "This error is for reference only. It reflects the previous translation mistake. Please correct it in this translation.\r\n";
                     return false;
                 }
                 else
