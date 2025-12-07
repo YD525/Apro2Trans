@@ -136,14 +136,16 @@ namespace Apro2Trans
                     }
 
                     //Dynamically modify prompt words
-                    Item.AIParam = Action +
+                    Item.AIParam =Action +
                     "[Translation Error Report]\r\n" +
                     $"Translation error: The \"$\" placeholder symbols were handled incorrectly.\r\n" +
                     "All \"$\" characters must be preserved without any modification.\r\n" +
                     "Please strictly follow the placeholder format $$Word$$ and do NOT translate or modify it.\r\n" +
                      AutoStr +
+                    "Even after correction, the translation must not include any extra description, emoji, or content unrelated to the translation.\r\n" +
                     $"Source: {Item.SourceText}\r\n" +
                     $"Invalid Translation: {Item.TransText}\r\n";
+
                     return false;
                 }
                 else
