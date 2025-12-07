@@ -34,7 +34,6 @@ namespace Apro2Trans
         public static void Init()
         {
             DelegateHelper.SetDataCall += Recv;
-            DelegateHelper.SetTranslationUnitCallBack += TranslationUnitEndWorkCall;
 
             RegListener("InputOutputLog", new List<int>() { 3, 5 }, new Action<int, object>((Sign, Any) =>
             {
@@ -75,35 +74,6 @@ namespace Apro2Trans
                 }
                 catch { }
             });
-        }
-
-        public static bool TranslationUnitEndWorkCall(TranslationUnit Item,int State)
-        {
-            if (State == 2)
-            {
-                //Quality inspection of the translated content
-                int A = Item.SourceText?.Count(L => L == '$') ?? 0;
-                int B = Item.TransText?.Count(L => L == '$') ?? 0;
-
-                if (A != B)
-                {
-                    //Dynamically modify prompt words
-                    Item.AIParam =
-                    "[Translation Error Report]\r\n"+
-                    $"Translation error: The \"$\" placeholder symbols were handled incorrectly.\r\n" +
-                    "All \"$\" characters must be preserved without any modification.\r\n" +
-                    "Please strictly follow the placeholder format $$Word$$ and do NOT translate or modify it.\r\n" +
-                    $"Source: {Item.SourceText}\r\n" +
-                    $"Invalid Translation: {Item.TransText}";
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-
-            return true;
         }
 
         public static void RegListener(string Key, List<int> ActiveIDs, Action<int, object> Action)

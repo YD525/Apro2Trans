@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PhoenixEngine.DelegateManagement;
 using PhoenixEngine.EngineManagement;
 using PhoenixEngine.TranslateCore;
 using PhoenixEngine.TranslateManage;
@@ -89,8 +90,40 @@ namespace Apro2Trans
 
             Engine.From = Languages.English;
             Engine.To = Languages.English;
+
+            DelegateHelper.SetTranslationUnitCallBack += TranslationUnitEndWorkCall;
         }
-      
+
+        public static bool TranslationUnitEndWorkCall(TranslationUnit Item, int State)
+        {
+            if (State == 2)
+            {
+                //Quality inspection of the translated content
+                int A = Item.SourceText?.Count(L => L == '$') ?? 0;
+                int B = Item.TransText?.Count(L => L == '$') ?? 0;
+
+                if (A != B)
+                {
+                    //Dynamically modify prompt words
+                    Item.AIParam =
+                    "[Translation Error Report]\r\n" +
+                    $"Translation error: The \"$\" placeholder symbols were handled incorrectly.\r\n" +
+                    "All \"$\" characters must be preserved without any modification.\r\n" +
+                    "Please strictly follow the placeholder format $$Word$$ and do NOT translate or modify it.\r\n" +
+                    "Repeat: do NOT translate or alter anything inside the $$Word$$ placeholders.\r\n" +
+                    $"Source: {Item.SourceText}\r\n" +
+                    $"Invalid Translation: {Item.TransText}";
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+
+            return true;
+        }
+
         public TranslationUnit? Dequeue(ref bool IsEnd)
         {
             return Engine.DequeueTranslated(ref IsEnd);
