@@ -169,7 +169,13 @@ namespace Apro2Trans
                 string Cleaned = Regex.Replace(Item.TransText, @"[^\p{L}\p{N}\$\{\}]+", "");
                 string WithoutPlaceholders = Regex.Replace(Cleaned, @"\$\$.*?\$\$", "");
 
-                if (LanguageHelper.DetectLanguageByLine(WithoutPlaceholders) == Engine.From && WithoutPlaceholders.Length > 7)
+                if (LanguageHelper.DetectLanguageByLine(WithoutPlaceholders) == Engine.From && WithoutPlaceholders.Length > 7 
+                    && 
+                    (  Engine.To == Languages.TraditionalChinese
+                    || Engine.To == Languages.SimplifiedChinese 
+                    || Engine.To == Languages.Korean 
+                    || Engine.To == Languages.Japanese
+                    || Engine.To == Languages.Russian))
                 {
                     return false;
                 }
