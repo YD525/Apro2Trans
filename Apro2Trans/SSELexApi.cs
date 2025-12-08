@@ -98,7 +98,6 @@ namespace Apro2Trans
         {
             string Text = Item.TransText;
 
-            // 仅检测特殊符号或控制字符
             bool HasSpecialChar = Text.Any(c => (c >= '\uE000' && c <= '\uF8FF') || char.IsControl(c) && c != '\r' && c != '\n');
 
             if (HasSpecialChar)
@@ -114,6 +113,23 @@ namespace Apro2Trans
             }
 
             return false;
+        }
+
+        public static bool IsPlaceholdersTranslated(string text)
+        {
+            var Matches = Regex.Matches(text, @"\$\$(.*?)\$\$");
+
+            foreach (Match Match in Matches)
+            {
+                string Content = Match.Groups[1].Value;
+
+                if (!Regex.IsMatch(Content, @"^[a-zA-Z0-9]+$"))
+                {
+                    return true;
+                }
+            }
+
+            return false; 
         }
 
 
@@ -139,6 +155,12 @@ namespace Apro2Trans
 
             if (State == 2)
             {
+                if (IsPlaceholdersTranslated(Item.TransText))
+                {
+                    Item.AIParam = Action + "\r\n" + "Do not translate the content within the placeholder ($$$$).";
+                    return false;
+                }
+
                 if (CheckAIOutput(ref Item, Action))
                 {
                     return false;
