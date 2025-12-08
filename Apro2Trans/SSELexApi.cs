@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PhoenixEngine.DelegateManagement;
 using PhoenixEngine.EngineManagement;
@@ -93,6 +94,28 @@ namespace Apro2Trans
 
             DelegateHelper.SetTranslationUnitCallBack += TranslationUnitEndWorkCall;
         }
+        public static bool CheckAIOutput(ref TranslationUnit Item, string Action)
+        {
+            string Text = Item.TransText;
+
+            // 仅检测特殊符号或控制字符
+            bool HasSpecialChar = Text.Any(c => (c >= '\uE000' && c <= '\uF8FF') || char.IsControl(c) && c != '\r' && c != '\n');
+
+            if (HasSpecialChar)
+            {
+                Item.AIParam = Action +
+                    "\r\n" +
+                    "Please do NOT include any special or control characters (like private-use symbols). " +
+                    "Only output the pure translated text, keeping valid symbols like ., ?, !, $, and following the placeholder format $$Word$$.\r\n" +
+                    $"Previous source: {Item.SourceText}\r\n" +
+                    $"Previous invalid translation: {Item.TransText}\r\n" +
+                    "This error is for reference only. Please correct it in this translation.\r\n";
+                return true;
+            }
+
+            return false;
+        }
+
 
         public static List<string> ErrorKeys = new List<string>();
         public static bool TranslationUnitEndWorkCall(TranslationUnit Item, int State)
@@ -102,9 +125,12 @@ namespace Apro2Trans
    "IMPORTANT: The translation will be directly shown in the game JSON.\r\n" +
    "Only output the pure translated text.\r\n" +
    "Do NOT add any extra characters, explanations, labels, context, control characters, or emoji.\r\n" +
-   "Strictly follow the placeholder format $$Word$$.\r\n"+ 
-   "[Role]\r\n"+ 
+   "Strictly follow the placeholder format $$Word$$.\r\n" +
+   "You need to ensure the sentences are as smooth as possible and consistent with the atmosphere of an R18 game.\r\n"+
+   "Please do not include any emojis or content that cannot be displayed in the game. The game only supports text and standard symbols.\r\n" +
+   "[Role]\r\n" +
    "You are an AI translator for erotic games.\r\n";
+  
 
             if (Item.AIParam.Length == 0)
             {
@@ -113,6 +139,18 @@ namespace Apro2Trans
 
             if (State == 2)
             {
+                if (CheckAIOutput(ref Item, Action))
+                {
+                    return false;
+                }
+
+                string Cleaned = Regex.Replace(Item.TransText, @"[^\p{L}\p{N}\$\{\}]+", "");
+                string WithoutPlaceholders = Regex.Replace(Cleaned, @"\$\$.*?\$\$", "");
+
+                if (LanguageHelper.DetectLanguageByLine(WithoutPlaceholders) == Engine.From && WithoutPlaceholders.Length > 7)
+                {
+                    return false;
+                }
                 //Quality inspection of the translated content
                 int A = Item.SourceText?.Count(L => L == '$') ?? 0;
                 int B = Item.TransText?.Count(L => L == '$') ?? 0;
@@ -147,7 +185,8 @@ namespace Apro2Trans
                     "Even after correction, the translation must not include any extra description, emoji, or content unrelated to the translation.\r\n" +
                     $"Source: {Item.SourceText}\r\n" +
                     $"Invalid Translation: {Item.TransText}\r\n"+
-                    "This error is for reference only. It reflects the previous translation mistake. Please correct it in this translation.\r\n";
+                    "This error is for reference only. It reflects the previous translation mistake. Please correct it in this translation.\r\n"+
+                    "The translated content will be displayed directly in the game; please do not add any content unrelated to the translation.\r\n";
                     return false;
                 }
                 else
