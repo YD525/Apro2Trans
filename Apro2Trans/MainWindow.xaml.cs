@@ -73,6 +73,9 @@ namespace Apro2Trans
             EngineConfig.Config.ProtectedPatterns.Add(P_Placeholder);
             EngineConfig.Config.PreTranslateEnable = true;
 
+            EngineConfig.Config.MaxTranslationAttempts = 99999;
+            EngineConfig.Config.ReTryWaitTime = 3000;
+
             if (DBPath.Text.Length > 0)
             {
                 if (Directory.Exists(DBPath.Text))
