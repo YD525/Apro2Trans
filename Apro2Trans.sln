@@ -1,31 +1,31 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apro2Trans", "Apro2Trans\Apro2Trans.csproj", "{EAB28EE3-D0D9-4A8C-812F-208933C80CAA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apro2Trans", "Apro2Trans\Apro2Trans.csproj", "{82F2B3DB-1C02-45CB-AD33-DB8CB092725B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Debug|x86 = Debug|x86
+		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
-		Release|x86 = Release|x86
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EAB28EE3-D0D9-4A8C-812F-208933C80CAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EAB28EE3-D0D9-4A8C-812F-208933C80CAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EAB28EE3-D0D9-4A8C-812F-208933C80CAA}.Debug|x86.ActiveCfg = Debug|x86
-		{EAB28EE3-D0D9-4A8C-812F-208933C80CAA}.Debug|x86.Build.0 = Debug|x86
-		{EAB28EE3-D0D9-4A8C-812F-208933C80CAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EAB28EE3-D0D9-4A8C-812F-208933C80CAA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EAB28EE3-D0D9-4A8C-812F-208933C80CAA}.Release|x86.ActiveCfg = Release|x86
-		{EAB28EE3-D0D9-4A8C-812F-208933C80CAA}.Release|x86.Build.0 = Release|x86
+		{82F2B3DB-1C02-45CB-AD33-DB8CB092725B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82F2B3DB-1C02-45CB-AD33-DB8CB092725B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82F2B3DB-1C02-45CB-AD33-DB8CB092725B}.Debug|x64.ActiveCfg = Debug|x64
+		{82F2B3DB-1C02-45CB-AD33-DB8CB092725B}.Debug|x64.Build.0 = Debug|x64
+		{82F2B3DB-1C02-45CB-AD33-DB8CB092725B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82F2B3DB-1C02-45CB-AD33-DB8CB092725B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82F2B3DB-1C02-45CB-AD33-DB8CB092725B}.Release|x64.ActiveCfg = Release|x64
+		{82F2B3DB-1C02-45CB-AD33-DB8CB092725B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {F9DA1106-5724-488C-A91E-1B9D30A45445}
+		SolutionGuid = {0DB79CC2-58F4-4515-A204-EFB72A1BCAA4}
 	EndGlobalSection
 EndGlobal

@@ -81,11 +81,11 @@ namespace Apro2Trans
                 Directory.CreateDirectory(SetCachePath);
             }
 
-            EngineConfig.LMLocalAIEnable = true;
-            EngineConfig.ContextEnable = true;
+            EngineConfig.Config.LMLocalAIEnable = true;
+            EngineConfig.Config.ContextEnable = true;
 
-            EngineConfig.ContextLimit = 150;
-            EngineConfig.PreTranslateEnable = true;
+            EngineConfig.Config.ContextLimit = 150;
+            EngineConfig.Config.PreTranslateEnable = true;
 
             EngineConfig.Save();
 
@@ -226,7 +226,7 @@ namespace Apro2Trans
             return true;
         }
 
-        public TranslationUnit? Dequeue(ref bool IsEnd)
+        public TranslationUnit Dequeue(ref bool IsEnd)
         {
             return Engine.DequeueTranslated(ref IsEnd);
         }
@@ -251,8 +251,8 @@ namespace Apro2Trans
         }
         public void SetThread(int ThreadCount)
         {
-            EngineConfig.MaxThreadCount = ThreadCount;
-            EngineConfig.AutoSetThreadLimit = false;
+            EngineConfig.Config.MaxThreadCount = ThreadCount;
+            EngineConfig.Config.AutoSetThreadLimit = false;
 
             EngineConfig.Save();
         }

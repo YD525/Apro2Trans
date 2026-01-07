@@ -1,6 +1,13 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
 using PhoenixEngine.ConvertManager;
 using PhoenixEngine.EngineManagement;
 using PhoenixEngine.TranslateCore;
@@ -22,7 +29,7 @@ namespace Apro2Trans
 
         public void SetLog(string Msg)
         {
-            Log.Dispatcher.Invoke(new Action(() => 
+            Log.Dispatcher.Invoke(new Action(() =>
             {
                 Log.Items.Add(Msg);
                 Log.ScrollIntoView(Log.Items[Log.Items.Count - 1]);
@@ -45,7 +52,7 @@ namespace Apro2Trans
         {
             AproposHelper.TranslateApi.Init();
 
-            EngineConfig.AutoSetThreadLimit = false;
+            EngineConfig.Config.AutoSetThreadLimit = false;
 
             foreach (var GetLang in GetSupportedLanguages())
             {
@@ -58,14 +65,14 @@ namespace Apro2Trans
 
         private void StartTrans(object sender, RoutedEventArgs e)
         {
-            EngineConfig.MaxThreadCount = ConvertHelper.ObjToInt(ThreadLimit.Text);
-
+            EngineConfig.Config.MaxThreadCount = ConvertHelper.ObjToInt(ThreadLimit.Text);
+            
             if (DBPath.Text.Length > 0)
             {
                 if (Directory.Exists(DBPath.Text))
                 {
                     string GetPath = DBPath.Text;
-                    
+
                     AproposHelper.ReadDB(GetPath);
 
                     Log.Items.Clear();
@@ -78,7 +85,7 @@ namespace Apro2Trans
             string GetValue = ConvertHelper.ObjToStr(From.SelectedValue);
             if (GetValue.Length > 0)
             {
-                Languages Lang = Enum.Parse<Languages>(GetValue);
+                Languages Lang = (Languages)Enum.Parse(typeof(Languages), GetValue);
                 Engine.From = Lang;
             }
         }
@@ -88,19 +95,19 @@ namespace Apro2Trans
             string GetValue = ConvertHelper.ObjToStr(To.SelectedValue);
             if (GetValue.Length > 0)
             {
-                Languages Lang = Enum.Parse<Languages>(GetValue);
+                Languages Lang = (Languages)Enum.Parse(typeof(Languages), GetValue);
                 Engine.To = Lang;
             }
         }
 
         private void ThreadLimit_TextChanged(object sender, TextChangedEventArgs e)
         {
-            EngineConfig.MaxThreadCount = ConvertHelper.ObjToInt(ThreadLimit.Text);
+            EngineConfig.Config.MaxThreadCount = ConvertHelper.ObjToInt(ThreadLimit.Text);
         }
 
         private void LMPort_TextChanged(object sender, TextChangedEventArgs e)
         {
-            EngineConfig.LMPort = ConvertHelper.ObjToInt(LMPort.Text);
+            EngineConfig.Config.LMPort = ConvertHelper.ObjToInt(LMPort.Text);
         }
     }
 }

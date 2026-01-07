@@ -1,28 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Text.Json.Serialization;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using PhoenixEngine.TranslateManage;
 using PhoenixEngine.EngineManagement;
-using System.Security.RightsManagement;
 using System.IO;
-using System.Windows.Interop;
-using System.Collections;
 using PhoenixEngine.PlatformManagement.LocalAI;
-using System.Runtime.CompilerServices;
-using PhoenixEngine.DelegateManagement;
 using System.Text.RegularExpressions;
+using System.Threading;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Apro2Trans
 {
     public class AproposHelper
     {
-        public static Thread? UISyncTrd = null;
-        public static Thread? TranslationSyncTrd = null;
+        public static Thread UISyncTrd = null;
+        public static Thread TranslationSyncTrd = null;
 
         public static Dictionary<string, TranslationUnit> Translateds = new Dictionary<string, TranslationUnit>();
 
@@ -43,7 +36,7 @@ namespace Apro2Trans
                             Thread.Sleep(1000);
                             DeFine.WorkWin.Dispatcher.Invoke(new Action(() =>
                             {
-                                DeFine.WorkWin.ThreadInFo.Content = string.Format("(Current:{0},Max:{1})", Engine.GetThreadCount(), EngineConfig.MaxThreadCount);
+                                DeFine.WorkWin.ThreadInFo.Content = string.Format("(Current:{0},Max:{1})", Engine.GetThreadCount(), EngineConfig.Config.MaxThreadCount);
                                 DeFine.WorkWin.Progress.Content = string.Format("({0}/{1})", Translateds.Count, Total);
                                 if (Working)
                                 {
@@ -62,17 +55,25 @@ namespace Apro2Trans
             }
         }
 
-        public static bool IsValidJsonString(string? Text)
+        public static bool IsValidJsonString(string Text)
         {
             if (Text == null)
                 return true;
 
             try
             {
-                JsonEncodedText.Encode(Text);
-                return true;
+                string Json = JsonConvert.SerializeObject(Text);
+
+                string Deserialized = JsonConvert.DeserializeObject<string>(Json);
+
+                if (Deserialized == Text)
+                {
+                    return true;
+                }
+
+                return false;
             }
-            catch
+            catch (JsonException)
             {
                 return false;
             }
@@ -223,29 +224,36 @@ namespace Apro2Trans
             StartTranslationSyncService(false);
         }
 
-        public static string? ExtractContent(string AiResponseJson)
+        public static string ExtractContent(string AiResponseJson)
         {
             if (string.IsNullOrWhiteSpace(AiResponseJson))
                 return null;
 
             try
             {
-                using (JsonDocument Doc = JsonDocument.Parse(AiResponseJson))
-                {
+                JObject Json = JObject.Parse(AiResponseJson);
+                JArray Choices = (JArray)Json["choices"];
 
-                    JsonElement Choices = Doc.RootElement.GetProperty("choices");
-                    if (Choices.GetArrayLength() > 0)
+                if (Choices != null && Choices.Count > 0)
+                {
+                    JObject FirstChoice = (JObject)Choices[0];
+
+                    JObject Message = (JObject)FirstChoice["message"];
+
+                    if (Message != null)
                     {
-                        JsonElement FirstChoice = Choices[0];
-                        JsonElement Message = FirstChoice.GetProperty("message");
-                        string Content = Message.GetProperty("content").GetString();
+                        string Content = (string)Message["content"];
                         return Content;
                     }
                 }
             }
-            catch (JsonException ex)
+            catch (JsonReaderException ex)
             {
-
+                
+            }
+            catch (Exception ex)
+            {
+                
             }
 
             return null;
@@ -278,7 +286,7 @@ namespace Apro2Trans
 
                 if (FileName == "Synonyms.txt")
                 {
-                    SynonymsItem? GetSynonyms = JsonSerializer.Deserialize<SynonymsItem>(Content);
+                    SynonymsItem GetSynonyms = JsonConvert.DeserializeObject<SynonymsItem>(Content);
 
                     if (GetSynonyms == null)
                     {
@@ -1241,11 +1249,7 @@ namespace Apro2Trans
                         }
                     }
 
-                    GetJson = JsonSerializer.Serialize(GetSynonyms, new JsonSerializerOptions
-                    {
-                        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                        WriteIndented = true
-                    });
+                    GetJson = JsonConvert.SerializeObject(GetSynonyms,Formatting.Indented);
 
                     DataHelper.WriteFile(FilePath, Encoding.UTF8.GetBytes(GetJson));
                     continue;
@@ -1268,7 +1272,7 @@ namespace Apro2Trans
                     }
                 }
 
-                AproposItem GetApropos = JsonSerializer.Deserialize<AproposItem>(Content);
+                AproposItem GetApropos = JsonConvert.DeserializeObject<AproposItem>(Content);
 
                 if (GetApropos == null)
                 {
@@ -1311,11 +1315,7 @@ namespace Apro2Trans
                         }
                     }
 
-                GetJson = JsonSerializer.Serialize(GetApropos, new JsonSerializerOptions
-                {
-                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                    WriteIndented = true
-                });
+                GetJson = JsonConvert.SerializeObject(GetApropos,Formatting.Indented);
 
                 DataHelper.WriteFile(FilePath, Encoding.UTF8.GetBytes(GetJson));
                 continue;
@@ -1352,10 +1352,10 @@ Return only the fixed JSON.
 
             if (FileName == "Synonyms.txt")
             {
-                SynonymsItem? GetSynonyms = null;
+                SynonymsItem GetSynonyms = null;
                 try
                 {
-                    GetSynonyms = JsonSerializer.Deserialize<SynonymsItem>(Content);
+                    GetSynonyms = JsonConvert.DeserializeObject<SynonymsItem>(Content);
                 }
                 catch (Exception Ex)
                 {
@@ -1365,28 +1365,23 @@ Return only the fixed JSON.
                 TryAgain:
                     LMStudio NLMStudio = new LMStudio();
 
-                    string? RecvMsg = "";
+                    string RecvMsg = "";
 
                     NLMStudio.CallAI(Prompt, ref RecvMsg);
 
                     if (RecvMsg != null)
                     {
-                        string? GetAIResult = ExtractContent(RecvMsg);
+                        string GetAIResult = ExtractContent(RecvMsg);
                         if (GetAIResult != null)
                         {
                             //Input the AI-repaired JSON
                             //If you're wrong, just go to.
                             try
                             {
-                                GetSynonyms = JsonSerializer.Deserialize<SynonymsItem>(GetAIResult);
+                                GetSynonyms = JsonConvert.DeserializeObject<SynonymsItem>(GetAIResult);
 
                                 //Write the repaired JSON
-                                var GetJson = JsonSerializer.Serialize(GetSynonyms, new JsonSerializerOptions
-                                {
-                                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                                    WriteIndented = true
-                                });
-
+                                var GetJson = JsonConvert.SerializeObject(GetSynonyms,Formatting.Indented);
                                 DataHelper.WriteFile(FilePath, Encoding.UTF8.GetBytes(GetJson));
 
                                 Log("Automatically fix JSON syntax errors - " + FilePath);
@@ -2228,39 +2223,35 @@ Return only the fixed JSON.
                 }
             }
 
-            AproposItem? GetApropos = null;
+            AproposItem GetApropos = null;
 
             try
             {
-                GetApropos = JsonSerializer.Deserialize<AproposItem>(Content);
+                GetApropos = JsonConvert.DeserializeObject<AproposItem>(Content);
             }
             catch (Exception Ex)
             {
             //Automatic JSON syntax correction
             //[Apropos2 DB Update] - The JSON has an incorrect format... 
             //Since we're already here, let's just use AI to fix it without thinking.
-            TryAgain:
+                TryAgain:
                 LMStudio NLMStudio = new LMStudio();
-                string? RecvMsg = "";
+                string RecvMsg = "";
                 NLMStudio.CallAI(Prompt, ref RecvMsg);
 
                 if (RecvMsg != null)
                 {
-                    string? GetAIResult = ExtractContent(RecvMsg);
+                    string GetAIResult = ExtractContent(RecvMsg);
                     if (GetAIResult != null)
                     {
                         //Input the AI-repaired JSON
                         //If you're wrong, just go to.
                         try
                         {
-                            GetApropos = JsonSerializer.Deserialize<AproposItem>(GetAIResult);
+                            GetApropos = JsonConvert.DeserializeObject<AproposItem>(GetAIResult);
 
                             //Write the repaired JSON
-                            var GetJson = JsonSerializer.Serialize(GetApropos, new JsonSerializerOptions
-                            {
-                                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                                WriteIndented = true
-                            });
+                            var GetJson = JsonConvert.SerializeObject(GetApropos,Formatting.Indented);
 
                             DataHelper.WriteFile(FilePath, Encoding.UTF8.GetBytes(GetJson));
 
@@ -2326,13 +2317,13 @@ Return only the fixed JSON.
 
     public class AproposItem
     {
-        [JsonPropertyName("1st Person")]
+        [JsonProperty("1st Person")]
         public string[] _1stPerson { get; set; }
 
-        [JsonPropertyName("2nd Person")]
+        [JsonProperty("2nd Person")]
         public string[] _2ndPerson { get; set; }
 
-        [JsonPropertyName("3rd Person")]
+        [JsonProperty("3rd Person")]
         public string[] _3rdPerson { get; set; }
     }
 
@@ -2340,275 +2331,275 @@ Return only the fixed JSON.
 
     public class SynonymsItem
     {
-        [JsonPropertyName("{ACCEPTS}")]
+        [JsonProperty("{ACCEPTS}")]
         public string[] ACCEPTS { get; set; }
 
-        [JsonPropertyName("{ACCEPT}")]
+        [JsonProperty("{ACCEPT}")]
         public string[] ACCEPT { get; set; }
 
-        [JsonPropertyName("{ACCEPTING}")]
+        [JsonProperty("{ACCEPTING}")]
         public string[] ACCEPTING { get; set; }
 
-        [JsonPropertyName("{ASS}")]
+        [JsonProperty("{ASS}")]
         public string[] ASS { get; set; }
 
-        [JsonPropertyName("{BEASTCOCK}")]
+        [JsonProperty("{BEASTCOCK}")]
         public string[] BEASTCOCK { get; set; }
 
-        [JsonPropertyName("{BEAST}")]
+        [JsonProperty("{BEAST}")]
         public string[] BEAST { get; set; }
 
-        [JsonPropertyName("{BITCH}")]
+        [JsonProperty("{BITCH}")]
         public string[] BITCH { get; set; }
 
-        [JsonPropertyName("{BOOBS}")]
+        [JsonProperty("{BOOBS}")]
         public string[] BOOBS { get; set; }
 
-        [JsonPropertyName("{BREED}")]
+        [JsonProperty("{BREED}")]
         public string[] BREED { get; set; }
 
-        [JsonPropertyName("{BUGCOCK}")]
+        [JsonProperty("{BUGCOCK}")]
         public string[] BUGCOCK { get; set; }
 
-        [JsonPropertyName("{BUG}")]
+        [JsonProperty("{BUG}")]
         public string[] BUG { get; set; }
 
-        [JsonPropertyName("{BUTTOCKS}")]
+        [JsonProperty("{BUTTOCKS}")]
         public string[] BUTTOCKS { get; set; }
 
-        [JsonPropertyName("{COCK}")]
+        [JsonProperty("{COCK}")]
         public string[] COCK { get; set; }
 
-        [JsonPropertyName("{CREAM}")]
+        [JsonProperty("{CREAM}")]
         public string[] CREAM { get; set; }
 
-        [JsonPropertyName("{CUMMING}")]
+        [JsonProperty("{CUMMING}")]
         public string[] CUMMING { get; set; }
 
-        [JsonPropertyName("{CUMS}")]
+        [JsonProperty("{CUMS}")]
         public string[] CUMS { get; set; }
 
-        [JsonPropertyName("{CUM}")]
+        [JsonProperty("{CUM}")]
         public string[] CUM { get; set; }
 
-        [JsonPropertyName("{DEAD}")]
+        [JsonProperty("{DEAD}")]
         public string[] DEAD { get; set; }
 
-        [JsonPropertyName("{EXPLORE}")]
+        [JsonProperty("{EXPLORE}")]
         public string[] EXPLORE { get; set; }
 
-        [JsonPropertyName("{EXPOSE}")]
+        [JsonProperty("{EXPOSE}")]
         public string[] EXPOSE { get; set; }
 
-        [JsonPropertyName("{FEAR}")]
+        [JsonProperty("{FEAR}")]
         public string[] FEAR { get; set; }
 
-        [JsonPropertyName("{FFAMILY}")]
+        [JsonProperty("{FFAMILY}")]
         public string[] FFAMILY { get; set; }
 
-        [JsonPropertyName("{FOREIGN}")]
+        [JsonProperty("{FOREIGN}")]
         public string[] FOREIGN { get; set; }
 
-        [JsonPropertyName("{FUCKED}")]
+        [JsonProperty("{FUCKED}")]
         public string[] FUCKED { get; set; }
 
-        [JsonPropertyName("{FUCKING}")]
+        [JsonProperty("{FUCKING}")]
         public string[] FUCKING { get; set; }
 
-        [JsonPropertyName("{FUCKS}")]
+        [JsonProperty("{FUCKS}")]
         public string[] FUCKS { get; set; }
 
-        [JsonPropertyName("{FUCK}")]
+        [JsonProperty("{FUCK}")]
         public string[] FUCK { get; set; }
 
-        [JsonPropertyName("{GENWT}")]
+        [JsonProperty("{GENWT}")]
         public string[] GENWT { get; set; }
 
-        [JsonPropertyName("{GIRTH}")]
+        [JsonProperty("{GIRTH}")]
         public string[] GIRTH { get; set; }
 
-        [JsonPropertyName("{HEAVING}")]
+        [JsonProperty("{HEAVING}")]
         public string[] HEAVING { get; set; }
 
-        [JsonPropertyName("{HOLE}")]
+        [JsonProperty("{HOLE}")]
         public string[] HOLE { get; set; }
 
-        [JsonPropertyName("{HOLES}")]
+        [JsonProperty("{HOLES}")]
         public string[] HOLES { get; set; }
 
-        [JsonPropertyName("{HORNY}")]
+        [JsonProperty("{HORNY}")]
         public string[] HORNY { get; set; }
 
-        [JsonPropertyName("{HUGELOAD}")]
+        [JsonProperty("{HUGELOAD}")]
         public string[] HUGELOAD { get; set; }
 
-        [JsonPropertyName("{HUGE}")]
+        [JsonProperty("{HUGE}")]
         public string[] HUGE { get; set; }
 
-        [JsonPropertyName("{INSERT}")]
+        [JsonProperty("{INSERT}")]
         public string[] INSERT { get; set; }
 
-        [JsonPropertyName("{INSERTS}")]
+        [JsonProperty("{INSERTS}")]
         public string[] INSERTS { get; set; }
 
-        [JsonPropertyName("{INSERTED}")]
+        [JsonProperty("{INSERTED}")]
         public string[] INSERTED { get; set; }
 
-        [JsonPropertyName("{INSERTING}")]
+        [JsonProperty("{INSERTING}")]
         public string[] INSERTING { get; set; }
 
-        [JsonPropertyName("{JIGGLE}")]
+        [JsonProperty("{JIGGLE}")]
         public string[] JIGGLE { get; set; }
 
-        [JsonPropertyName("{JUICY}")]
+        [JsonProperty("{JUICY}")]
         public string[] JUICY { get; set; }
 
-        [JsonPropertyName("{LARGELOAD}")]
+        [JsonProperty("{LARGELOAD}")]
         public string[] LARGELOAD { get; set; }
 
-        [JsonPropertyName("{LOUDLY}")]
+        [JsonProperty("{LOUDLY}")]
         public string[] LOUDLY { get; set; }
 
-        [JsonPropertyName("{MACHINESLIME}")]
+        [JsonProperty("{MACHINESLIME}")]
         public string[] MACHINESLIME { get; set; }
 
-        [JsonPropertyName("{MACHINESLIMY}")]
+        [JsonProperty("{MACHINESLIMY}")]
         public string[] MACHINESLIMY { get; set; }
 
-        [JsonPropertyName("{MACHINE}")]
+        [JsonProperty("{MACHINE}")]
         public string[] MACHINE { get; set; }
 
-        [JsonPropertyName("{METAL}")]
+        [JsonProperty("{METAL}")]
         public string[] METAL { get; set; }
 
-        [JsonPropertyName("{MFAMILY}")]
+        [JsonProperty("{MFAMILY}")]
         public string[] MFAMILY { get; set; }
 
-        [JsonPropertyName("{MNONFAMILY}")]
+        [JsonProperty("{MNONFAMILY}")]
         public string[] MNONFAMILY { get; set; }
 
-        [JsonPropertyName("{MOANING}")]
+        [JsonProperty("{MOANING}")]
         public string[] MOANING { get; set; }
 
-        [JsonPropertyName("{MOANS}")]
+        [JsonProperty("{MOANS}")]
         public string[] MOANS { get; set; }
 
-        [JsonPropertyName("{MOAN}")]
+        [JsonProperty("{MOAN}")]
         public string[] MOAN { get; set; }
 
-        [JsonPropertyName("{MOUTH}")]
+        [JsonProperty("{MOUTH}")]
         public string[] MOUTH { get; set; }
 
-        [JsonPropertyName("{OPENING}")]
+        [JsonProperty("{OPENING}")]
         public string[] OPENING { get; set; }
 
-        [JsonPropertyName("{PAIN}")]
+        [JsonProperty("{PAIN}")]
         public string[] PAIN { get; set; }
 
-        [JsonPropertyName("{PENIS}")]
+        [JsonProperty("{PENIS}")]
         public string[] PENIS { get; set; }
 
-        [JsonPropertyName("{PROBE}")]
+        [JsonProperty("{PROBE}")]
         public string[] PROBE { get; set; }
 
-        [JsonPropertyName("{PUSSY}")]
+        [JsonProperty("{PUSSY}")]
         public string[] PUSSY { get; set; }
 
-        [JsonPropertyName("{QUIVERING}")]
+        [JsonProperty("{QUIVERING}")]
         public string[] QUIVERING { get; set; }
 
-        [JsonPropertyName("{RAPED}")]
+        [JsonProperty("{RAPED}")]
         public string[] RAPED { get; set; }
 
-        [JsonPropertyName("{RAPE}")]
+        [JsonProperty("{RAPE}")]
         public string[] RAPE { get; set; }
 
-        [JsonPropertyName("{SALTY}")]
+        [JsonProperty("{SALTY}")]
         public string[] SALTY { get; set; }
 
-        [JsonPropertyName("{SCREAM}")]
+        [JsonProperty("{SCREAM}")]
         public string[] SCREAM { get; set; }
 
-        [JsonPropertyName("{SCREAMS}")]
+        [JsonProperty("{SCREAMS}")]
         public string[] SCREAMS { get; set; }
 
-        [JsonPropertyName("{SCUM}")]
+        [JsonProperty("{SCUM}")]
         public string[] SCUM { get; set; }
 
-        [JsonPropertyName("{SLIME}")]
+        [JsonProperty("{SLIME}")]
         public string[] SLIME { get; set; }
 
-        [JsonPropertyName("{SLIMY}")]
+        [JsonProperty("{SLIMY}")]
         public string[] SLIMY { get; set; }
 
-        [JsonPropertyName("{SLOPPY}")]
+        [JsonProperty("{SLOPPY}")]
         public string[] SLOPPY { get; set; }
 
-        [JsonPropertyName("{SLOWLY}")]
+        [JsonProperty("{SLOWLY}")]
         public string[] SLOWLY { get; set; }
 
-        [JsonPropertyName("{SLUTTY}")]
+        [JsonProperty("{SLUTTY}")]
         public string[] SLUTTY { get; set; }
 
-        [JsonPropertyName("{SODOMIZED}")]
+        [JsonProperty("{SODOMIZED}")]
         public string[] SODOMIZED { get; set; }
 
-        [JsonPropertyName("{SODOMIZES}")]
+        [JsonProperty("{SODOMIZES}")]
         public string[] SODOMIZES { get; set; }
 
-        [JsonPropertyName("{SODOMIZE}")]
+        [JsonProperty("{SODOMIZE}")]
         public string[] SODOMIZE { get; set; }
 
-        [JsonPropertyName("{SODOMIZING}")]
+        [JsonProperty("{SODOMIZING}")]
         public string[] SODOMIZING { get; set; }
 
-        [JsonPropertyName("{SODOMY}")]
+        [JsonProperty("{SODOMY}")]
         public string[] SODOMY { get; set; }
 
-        [JsonPropertyName("{SOLID}")]
+        [JsonProperty("{SOLID}")]
         public string[] SOLID { get; set; }
 
-        [JsonPropertyName("{STRAPON}")]
+        [JsonProperty("{STRAPON}")]
         public string[] STRAPON { get; set; }
 
-        [JsonPropertyName("{SUBMISSIVE}")]
+        [JsonProperty("{SUBMISSIVE}")]
         public string[] SUBMISSIVE { get; set; }
 
-        [JsonPropertyName("{SUBMIT}")]
+        [JsonProperty("{SUBMIT}")]
         public string[] SUBMIT { get; set; }
 
-        [JsonPropertyName("{SWEARING}")]
+        [JsonProperty("{SWEARING}")]
         public string[] SWEARING { get; set; }
 
-        [JsonPropertyName("{TASTY}")]
+        [JsonProperty("{TASTY}")]
         public string[] TASTY { get; set; }
 
-        [JsonPropertyName("{THICK}")]
+        [JsonProperty("{THICK}")]
         public string[] THICK { get; set; }
 
-        [JsonPropertyName("{TIGHTNESS}")]
+        [JsonProperty("{TIGHTNESS}")]
         public string[] TIGHTNESS { get; set; }
 
-        [JsonPropertyName("{UNTHINKING}")]
+        [JsonProperty("{UNTHINKING}")]
         public string[] UNTHINKING { get; set; }
 
-        [JsonPropertyName("{VILE}")]
+        [JsonProperty("{VILE}")]
         public string[] VILE { get; set; }
 
-        [JsonPropertyName("{WET}")]
+        [JsonProperty("{WET}")]
         public string[] WET { get; set; }
 
-        [JsonPropertyName("{WHORE}")]
+        [JsonProperty("{WHORE}")]
         public string[] WHORE { get; set; }
     }
 
 
     public class WearAndTearItem
     {
-        [JsonPropertyName("descriptors")]
+        [JsonProperty("descriptors")]
         public WearAndTearDescriptors descriptors { get; set; }
 
-        [JsonPropertyName("descriptors-mcm")]
+        [JsonProperty("descriptors-mcm")]
         public string[] descriptorsmcm { get; set; }
     }
 
@@ -2631,13 +2622,13 @@ Return only the fixed JSON.
 
     public class ArousalItem
     {
-        [JsonPropertyName("{READINESS}")]
+        [JsonProperty("{READINESS}")]
         public READINESS READINESS { get; set; }
 
-        [JsonPropertyName("{FAROUSAL}")]
+        [JsonProperty("{FAROUSAL}")]
         public FAROUSAL FAROUSAL { get; set; }
 
-        [JsonPropertyName("{MAROUSAL}")]
+        [JsonProperty("{MAROUSAL}")]
         public MAROUSAL MAROUSAL { get; set; }
     }
 

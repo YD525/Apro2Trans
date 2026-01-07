@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using PhoenixEngine.DelegateManagement;
-using System.Windows;
-using PhoenixEngine.TranslateManage;
 using static PhoenixEngine.EngineManagement.DataTransmission;
-using Cohere;
-using PhoenixEngine.EngineManagement;
 
 namespace Apro2Trans
 {
