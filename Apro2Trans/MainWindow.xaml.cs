@@ -66,7 +66,13 @@ namespace Apro2Trans
         private void StartTrans(object sender, RoutedEventArgs e)
         {
             EngineConfig.Config.MaxThreadCount = ConvertHelper.ObjToInt(ThreadLimit.Text);
-            
+
+            string P_Placeholder = "\\$\\$(.*?)\\$\\$";
+
+            EngineConfig.Config.ProtectedPatterns.Clear();
+            EngineConfig.Config.ProtectedPatterns.Add(P_Placeholder);
+            EngineConfig.Config.PreTranslateEnable = true;
+
             if (DBPath.Text.Length > 0)
             {
                 if (Directory.Exists(DBPath.Text))

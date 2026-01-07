@@ -12,8 +12,8 @@ Supports translation between English, Japanese, German, Korean, Turkish, Brazili
 
 This project uses the following third-party frameworks and packages:
 
-- **Cohere**  
-  Required package to call the CohereAI API for natural language processing tasks.
+- **Newtonsoft.Json**  
+  Used for serializing and deserializing JSON
 
 - **System.Data.SQLite**  
   Dependency package for SQLite database operations.
